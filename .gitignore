@@ -1,5 +1,7 @@
 # Added by William
 .idea/
+dataset/
+.vector_cache/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
