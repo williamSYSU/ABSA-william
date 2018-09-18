@@ -36,11 +36,11 @@ polarity_dict = {
     'conflict': '2'
 }
 
-laptop_data_file = 'dataset/Laptops_Train.xml'
-restaurant_data_file = 'dataset/Restaurants_Train.xml'
+laptop_data_file = 'dataset/Laptops_Train_v2.xml'
+restaurant_data_file = 'dataset/Restaurants_Train_v2.xml'
 
-save_laptop_train_file = 'dataset/laptops_train.pre'
-save_restaurant_train_file = 'dataset/restaurant_train.pre'
+save_laptop_train_file = 'dataset/laptops_train_v2.pre'
+save_restaurant_train_file = 'dataset/restaurant_train_v2.pre'
 
 laptop_data_dom = parse(laptop_data_file).documentElemenxt
 sentences = laptop_data_dom.getElementsByTagName('sentence')
