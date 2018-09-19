@@ -13,6 +13,8 @@ import nltk
 import json
 import xmltodict
 
+import config
+
 spacy_en = spacy.load('en')
 
 
@@ -42,11 +44,11 @@ def write_file(filename, sentences):
 
 
 def xml_to_pre():
-    laptop_data_file = 'dataset/Laptops_Train_v2.xml'
-    restaurant_data_file = 'dataset/Restaurants_Train_v2.xml'
+    laptop_data_file = 'dataset/laptops_test.xml'
+    restaurant_data_file = 'dataset/restaurants_test.xml'
 
-    save_laptop_train_file = 'dataset/laptops_train_v2.pre'
-    save_restaurant_train_file = 'dataset/restaurant_train_v2.pre'
+    save_laptop_train_file = 'dataset/laptops_test.pre'
+    save_restaurant_train_file = 'dataset/restaurant_test.pre'
 
     laptop_data_dom = parse(laptop_data_file)
     sentences = laptop_data_dom.getElementsByTagName('sentence')
@@ -57,12 +59,12 @@ def xml_to_pre():
     write_file(save_restaurant_train_file, sentences)
 
 
-def xml_to_csv():
-    laptop_train_file = 'dataset/laptops_train_v2.pre'
-    restaurant_train_file = 'dataset/restaurant_train_v2.pre'
+def pre_to_tsv():
+    laptop_train_file = 'dataset/laptops_test.pre'
+    restaurant_train_file = 'dataset/restaurant_test.pre'
 
-    save_laptop_train_file = 'dataset/laptops_train_v2.csv'
-    save_restaurant_train_file = 'dataset/restaurant_train_v2.csv'
+    save_laptop_train_file = 'dataset/laptops_test.tsv'
+    save_restaurant_train_file = 'dataset/restaurant_test.tsv'
 
     with open(laptop_train_file, encoding='utf-8', mode='r') as src_file:
         with open(save_laptop_train_file, encoding='utf=8', mode='w') as tar_file:
@@ -70,7 +72,18 @@ def xml_to_csv():
             for line in src_file:
                 tar_file.write(line.strip())
                 if (idx + 1) % 3 != 0:
-                    tar_file.write(',')
+                    tar_file.write('\t')
+                else:
+                    tar_file.write('\n')
+                idx += 1
+
+    with open(restaurant_train_file, encoding='utf-8', mode='r') as src_file:
+        with open(save_restaurant_train_file, encoding='utf=8', mode='w') as tar_file:
+            idx = 0
+            for line in src_file:
+                tar_file.write(line.strip())
+                if (idx + 1) % 3 != 0:
+                    tar_file.write('\t')
                 else:
                     tar_file.write('\n')
                 idx += 1
@@ -85,44 +98,54 @@ def test_torchtext():
         sequential=True,
         tokenize=tokenizer,
         lower=True,
-        fix_length=100
+        batch_first=True,
     )
     ASPECT = data.Field(
-        # sequential=False,
-        # lower=True
+        sequential=True,
+        lower=True,
+        batch_first=True
     )
     LABEL = data.Field(
-        # sequential=False,
-        # use_vocab=False
+        sequential=False,
+        use_vocab=False,
+        batch_first=True
     )
 
-    train, val, test = data.TabularDataset.splits(
+    train_and_val, test = data.TabularDataset.splits(
         path='dataset/',
-        train='laptops_train_v2.pre',
-        validation='laptops_train_v2.pre',
-        test='laptops_train_v2.pre',
-        format='csv',
+        train='laptops_train.tsv',
+        test='laptops_test.tsv',
+        format='tsv',
         fields=[
             ('Text', TEXT),
             ('Aspect', ASPECT),
             ('Label', LABEL)
         ]
     )
+    train, val = train_and_val.split(
+        split_ratio=config.train_val_ratio
+    )
 
-    TEXT.build_vocab(train, vectors='glove.6B.100d')
-    ASPECT.build_vocab(train)
+    TEXT.build_vocab(train, vectors='glove.840B.300d')
+    ASPECT.build_vocab(train, vectors='glove.840B.300d')
     LABEL.build_vocab(train)
     train_iter, val_iter, test_iter = data.Iterator.splits(
         (train, val, test),
+        shuffle=False,
         sort_key=lambda x: len(x.Text),
-        batch_sizes=(8, 16, 16),
-        device=-1
+        batch_size=(8, 16, 16),
+        device=config.device
     )
-    vocab = TEXT.vocab
-    print(train_iter)
+
+    print('current device:' + config.device)
+    vocab_text = TEXT.vocab
+    vocab_aspect = ASPECT.vocab
+    vocab_label = LABEL.vocab
+
     for idx, item in enumerate(train_iter):
         if idx is 1:
-            print(item.Text)
+            print(item.Aspect)
+            break
 
 
 if __name__ == '__main__':
