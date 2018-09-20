@@ -170,8 +170,8 @@ class Corpus:
         self.texts = [t.text for t in self.corpus]
 
     def echo(self):
-        print '%d instances\n%d distinct aspect terms' % (len(self.corpus), len(self.top_aspect_terms))
-        print 'Top aspect terms: %s' % (', '.join(self.top_aspect_terms[:10]))
+        print('%d instances\n%d distinct aspect terms' % (len(self.corpus), len(self.top_aspect_terms)))
+        print('Top aspect terms: %s' % (', '.join(self.top_aspect_terms[:10])))
 
     def clean_tags(self):
         for i in range(len(self.corpus)):
@@ -448,13 +448,13 @@ def main(argv=None):
             testfile = arg
 
     # Examine if the file is in proper XML format for further use.
-    print 'Validating the file...'
+    print('Validating the file...')
     try:
         elements, aspects = validate(trainfile)
-        print 'PASSED! This corpus has: %d sentences, %d aspect term occurrences, and %d distinct aspect terms.' % (
-            len(elements), len(aspects), len(list(set(aspects))))
+        print('PASSED! This corpus has: %d sentences, %d aspect term occurrences, and %d distinct aspect terms.' % (
+            len(elements), len(aspects), len(list(set(aspects)))))
     except:
-        print "Unexpected error:", sys.exc_info()[0]
+        print("Unexpected error:", sys.exc_info()[0])
         raise
 
     # Get the corpus and split into train/test.
@@ -474,58 +474,58 @@ def main(argv=None):
     corpus.write_out('%s--test.xml' % domain_name, seen.corpus)
     unseen = Corpus(ET.parse('%s--test.xml' % domain_name).getroot().findall('sentence'))
 
-    # Perform the tasks, asked by the user and print the files with the predicted responses.
+    # Perform the tasks, asked by the user and print(the files with the predicted responses.
     if task == 1:
         b1 = BaselineAspectExtractor(traincorpus)
-        print 'Extracting aspect terms...'
+        print('Extracting aspect terms...')
         predicted = b1.tag(unseen.corpus)
         corpus.write_out('%s--test.predicted-aspect.xml' % domain_name, predicted, short=False)
-        print 'P = %f -- R = %f -- F1 = %f (#correct: %d, #retrieved: %d, #relevant: %d)' % Evaluate(seen.corpus,
-                                                                                                     predicted).aspect_extraction()
+        print('P = %f -- R = %f -- F1 = %f (#correct: %d, #retrieved: %d, #relevant: %d)' % Evaluate(seen.corpus,
+                                                                                                     predicted).aspect_extraction())
     if task == 2:
-        print 'Detecting aspect categories...'
+        print('Detecting aspect categories...')
         b2 = BaselineCategoryDetector(traincorpus)
         predicted = b2.tag(unseen.corpus)
-        print 'P = %f -- R = %f -- F1 = %f (#correct: %d, #retrieved: %d, #relevant: %d)' % Evaluate(seen.corpus,
-                                                                                                     predicted).category_detection()
+        print('P = %f -- R = %f -- F1 = %f (#correct: %d, #retrieved: %d, #relevant: %d)' % Evaluate(seen.corpus,
+                                                                                                     predicted).category_detection())
         corpus.write_out('%s--test.predicted-category.xml' % domain_name, predicted, short=False)
     if task == 3:
-        print 'Estimating aspect term polarity...'
+        print('Estimating aspect term polarity...')
         b3 = BaselineAspectPolarityEstimator(traincorpus)
         predicted = b3.tag(seen.corpus)
         corpus.write_out('%s--test.predicted-aspectPolar.xml' % domain_name, predicted, short=False)
-        print 'Accuracy = %f, #Correct/#All: %d/%d' % Evaluate(seen.corpus, predicted).aspect_polarity_estimation()
+        print('Accuracy = %f, #Correct/#All: %d/%d' % Evaluate(seen.corpus, predicted).aspect_polarity_estimation())
     if task == 4:
-        print 'Estimating aspect category polarity...'
+        print('Estimating aspect category polarity...')
         b4 = BaselineAspectCategoryPolarityEstimator(traincorpus)
         predicted = b4.tag(seen.corpus)
-        print 'Accuracy = %f, #Correct/#All: %d/%d' % Evaluate(seen.corpus,
-                                                               predicted).aspect_category_polarity_estimation()
+        print('Accuracy = %f, #Correct/#All: %d/%d' % Evaluate(seen.corpus,
+                                                               predicted).aspect_category_polarity_estimation())
         corpus.write_out('%s--test.predicted-categoryPolar.xml' % domain_name, predicted, short=False)
         # Perform tasks 1 & 2, and output an XML file with the predictions
     if task == 5:
-        print 'Task 1 & 2: Aspect Term and Category Detection'
+        print('Task 1 & 2: Aspect Term and Category Detection')
         b1 = BaselineAspectExtractor(traincorpus)
         b2 = BaselineCategoryDetector(traincorpus)
         b12 = BaselineStageI(b1, b2)
         predicted = b12.tag(unseen.corpus)
         corpus.write_out('%s--test.predicted-stageI.xml' % domain_name, predicted, short=False)
-        print 'Task 1: P = %f -- R = %f -- F1 = %f (#correct: %d, #retrieved: %d, #relevant: %d)' % Evaluate(
-            seen.corpus, predicted).aspect_extraction()
-        print 'Task 2: P = %f -- R = %f -- F1 = %f (#correct: %d, #retrieved: %d, #relevant: %d)' % Evaluate(
-            seen.corpus, predicted).category_detection()
+        print('Task 1: P = %f -- R = %f -- F1 = %f (#correct: %d, #retrieved: %d, #relevant: %d)' % Evaluate(
+            seen.corpus, predicted).aspect_extraction())
+        print('Task 2: P = %f -- R = %f -- F1 = %f (#correct: %d, #retrieved: %d, #relevant: %d)' % Evaluate(
+            seen.corpus, predicted).category_detection())
         # Perform tasks 3 & 4, and output an XML file with the predictions
     if task == 6:
-        print 'Aspect Term and Category Polarity Estimation'
+        print('Aspect Term and Category Polarity Estimation')
         b3 = BaselineAspectPolarityEstimator(traincorpus)
         b4 = BaselineAspectCategoryPolarityEstimator(traincorpus)
         b34 = BaselineStageII(b3, b4)
         predicted = b34.tag(seen.corpus)
         corpus.write_out('%s--test.predicted-stageII.xml' % domain_name, predicted, short=False)
-        print 'Task 3: Accuracy = %f (#Correct/#All: %d/%d)' % Evaluate(seen.corpus,
-                                                                        predicted).aspect_polarity_estimation()
-        print 'Task 4: Accuracy = %f (#Correct/#All: %d/%d)' % Evaluate(seen.corpus,
-                                                                        predicted).aspect_category_polarity_estimation()
+        print('Task 3: Accuracy = %f (#Correct/#All: %d/%d)' % Evaluate(seen.corpus,
+                                                                        predicted).aspect_polarity_estimation())
+        print('Task 4: Accuracy = %f (#Correct/#All: %d/%d)' % Evaluate(seen.corpus,
+                                                                        predicted).aspect_category_polarity_estimation())
 
 
 if __name__ == "__main__": main(sys.argv[1:])
