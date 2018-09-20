@@ -7,37 +7,128 @@
 # @Description  : Global parameters, including model parameters, training parameters and so on.
 # Copyrights (C) 2018. All Rights Reserved.
 
-import torch
 import os
+import torch
+import torch.nn as nn
+import torch.optim as optim
 
-# Automatically choose GPU or CPU
-if torch.cuda.is_available():
-    os.system('nvidia-smi -q -d Utilization | grep Gpu > log/gpu')
-    util_gpu = [int(line.strip().split()[2]) for line in open('log/gpu', 'r')]
+from models.bi_lstm import Bi_LSTM
+from models.lstm import LSTM
 
-    device = util_gpu.index(min(util_gpu))
-else:
-    device = -1
+# 模型种类
+model_classes = {
+    'bi_lstm': Bi_LSTM,
+    'lstm': LSTM,
+}
 
-# training parameters
+# 优化器种类
+optimizers = {
+    'adadelta': optim.Adadelta,
+    'adagrad': optim.Adagrad,
+    'adam': optim.Adam,
+    'adamax': optim.Adamax,
+    'asgd': optim.ASGD,
+    'sgd': optim.SGD
+}
+
+# 损失函数种类
+criterions = {
+    'bce': nn.BCELoss,
+    'mse': nn.MSELoss,
+    'cross_entropy': nn.CrossEntropyLoss,
+    'cos_embed': nn.CosineEmbeddingLoss
+}
+
+"""
+训练过程的可调参数
+"""
 learning_rate = 0.001
 epoch_num = 50
 train_batch_size = 16
 val_batch_size = 128
 test_batch_size = 128
 batch_size_tuple = (train_batch_size, val_batch_size, test_batch_size)
+model_name = 'lstm'
+optim_name = 'sgd'
+loss_name = 'cross_entropy'
+model = model_classes[model_name]
+optimizer = optimizers[optim_name]
+criterion = criterions[loss_name]
 
-# model parameters
+if_step_verify = 0
+early_stop = 0.001
+shuffle = 1
+"""
+模型结构的可调参数
+"""
 embed_size = 300
 hidden_size = 300
+target_size = 3
+dropout_rate = 0.3
 
-# dataset parameters
+"""
+数据集的可调参数
+"""
 train_val_ratio = 0.7
 max_sen_length = 80
 max_asp_length = 20
 
+"""
+其它可调参数
+"""
+# Other parameters
+log_dir = 'log'
+log_step = 20
+
+# Automatically choose GPU or CPU
+if torch.cuda.is_available():
+    os.system('nvidia-smi -q -d Utilization | grep Gpu > log/gpu')
+    util_gpu = [int(line.strip().split()[2]) for line in open('log/gpu', 'r')]
+
+    gpu_count = torch.cuda.device_count()
+    device_choose = [i for i in range(gpu_count)]
+    device = util_gpu.index(min(util_gpu))
+else:
+    device_choose = []
+    device = -1
+device_choose.append(-1)
+
 
 def init_parameters(opt):
-    global learning_rate, epoch_num, train_batch_size, val_batch_size, test_batch_size
-    global embed_size, hidden_size
+    global learning_rate, epoch_num, train_batch_size, val_batch_size, test_batch_size, \
+        batch_size_tuple, model_name, optim_name, if_step_verify, early_stop, shuffle, \
+        loss_name
+    global embed_size, hidden_size, target_size, dropout_rate
     global train_val_ratio, max_sen_length, max_asp_length
+    global log_dir, log_step, device
+
+    learning_rate = opt.learning_rate
+    epoch_num = opt.epoch_num
+
+    train_batch_size = opt.train_batch_size
+    val_batch_size = opt.val_batch_size
+    test_batch_size = opt.test_batch_size
+    batch_size_tuple = (train_batch_size, val_batch_size, test_batch_size)
+
+    model_name = opt.model
+    optim_name = opt.optim
+    loss_name = opt.loss_name
+    model = model_classes[model_name]
+    optimizer = optimizers[optim_name]
+    criterion = criterions[loss_name]
+
+    if_step_verify = opt.if_step_verify
+    early_stop = opt.early_stop
+    shuffle = opt.shuffle
+
+    hidden_size = opt.hidden_size
+    target_size = opt.target_size
+
+    dropout_rate = opt.dropout_rate
+    train_val_ratio = opt.train_val_ratio
+    max_sen_length = opt.max_sen_length
+    max_asp_length = opt.max_asp_length
+
+    log_dir = opt.log_dir
+    log_step = opt.log_step
+    device = opt.device

@@ -4,15 +4,12 @@
 # @FileName     : preprocess.py
 # @Time         : Created at 2018/9/17
 # @Blog         : http://zhiweil.ml/
+# @Description  : 测试数据集，预处理数据集
 # Copyrights (C) 2018. All Rights Reserved.
 
 from xml.dom.minidom import parse
-from torchtext import data, datasets
+
 import spacy
-import nltk
-import json
-import xmltodict
-import re
 
 import config
 from data_utils import ABSAData
@@ -91,6 +88,7 @@ def pre_to_tsv():
                     tar_file.write('\n')
                 idx += 1
 
+
 def count_max_length(index):
     max_length = 0
     with open('dataset/laptops_test.tsv', mode='r') as file:
@@ -115,4 +113,5 @@ def count_max_length(index):
 
 if __name__ == '__main__':
     absa_data = ABSAData()
-    print(absa_data.text_vocab.freqs)
+    # print(absa_data.text_vocab.freqs)
+    print('current device:' + str(config.device))

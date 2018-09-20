@@ -7,8 +7,8 @@
 # @Description  : 加载并预处理数据集
 # Copyrights (C) 2018. All Rights Reserved.
 
-from torchtext import data, datasets
 import spacy
+from torchtext import data
 
 import config
 
@@ -55,6 +55,7 @@ class ABSAData():
         self.train_iter, self.val_iter, self.test_iter = data.Iterator.splits(
             (train, val, test),
             shuffle=False,
+            repeat=False,
             sort_key=lambda x: len(x.Text),
             batch_sizes=config.batch_size_tuple,
             device=config.device
