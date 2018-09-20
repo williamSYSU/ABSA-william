@@ -47,14 +47,14 @@ class ABSAData():
         )
 
         # Build vocab for Field TEXT, ASPECT and LABEL
-        TEXT.build_vocab(train, vectors='glove.840B.300d')
-        ASPECT.build_vocab(train, vectors='glove.840B.300d')
-        LABEL.build_vocab(train)
+        TEXT.build_vocab(train, val, test, vectors='glove.840B.300d')
+        ASPECT.build_vocab(train, val, test, vectors='glove.840B.300d')
+        LABEL.build_vocab(train, val, test)
 
         # Get Iterator for train, validation and test data
         self.train_iter, self.val_iter, self.test_iter = data.Iterator.splits(
             (train, val, test),
-            shuffle=False,
+            shuffle=True if config.shuffle else False,
             repeat=False,
             sort_key=lambda x: len(x.Text),
             batch_sizes=config.batch_size_tuple,
@@ -65,6 +65,12 @@ class ABSAData():
         self.text_vocab = TEXT.vocab
         self.aspect_vocab = ASPECT.vocab
         self.label_vocab = LABEL.vocab
+
+        # Set vocab size in config
+        config.text_vocab = self.text_vocab
+        config.aspect_vocab = self.aspect_vocab
+        config.text_vocab_size = len(self.text_vocab)
+        config.aspect_vocab_size = len(self.aspect_vocab)
 
     def tokenizer(self, text):
         """

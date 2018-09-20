@@ -12,6 +12,7 @@ import torch.nn as nn
 
 import config
 
+
 class Bi_LSTM(nn.Module):
     def __init__(self):
         super(Bi_LSTM, self).__init__()

@@ -42,11 +42,11 @@ criterions = {
 """
 训练过程的可调参数
 """
-learning_rate = 0.001
-epoch_num = 50
+learning_rate = 0.01
+epoch_num = 500
 train_batch_size = 16
-val_batch_size = 128
-test_batch_size = 128
+val_batch_size = 64
+test_batch_size = 64
 batch_size_tuple = (train_batch_size, val_batch_size, test_batch_size)
 model_name = 'lstm'
 optim_name = 'sgd'
@@ -55,9 +55,9 @@ model = model_classes[model_name]
 optimizer = optimizers[optim_name]
 criterion = criterions[loss_name]
 
-if_step_verify = 0
-early_stop = 0.001
-shuffle = 1
+if_step_verify = 0  # 是否在训练中验证
+early_stop = 0.001  # 早停策略的阈值，loss低于这个阈值则停止训练
+shuffle = 0         # 是否打乱每一轮的batch
 """
 模型结构的可调参数
 """
@@ -66,19 +66,20 @@ hidden_size = 300
 target_size = 3
 dropout_rate = 0.3
 
+if_embed_trainable = 0  # 设置词向量是否可训练
 """
 数据集的可调参数
 """
-train_val_ratio = 0.7
-max_sen_length = 80
-max_asp_length = 20
-
+train_val_ratio = 0.99  # 训练集和测试集的比例
+max_sen_length = 80     # 最大句子长度
+max_asp_length = 20     # 最大词向量长度
 """
 其它可调参数
 """
-# Other parameters
-log_dir = 'log'
-log_step = 20
+log_dir = 'log'     # tensorboard路径
+log_step = 20       # 记录loss的步长
+pretrain = 0        # 设置是否使用预训练模型
+pretrain_path = ''  # 设置预训练模型路径
 
 # Automatically choose GPU or CPU
 if torch.cuda.is_available():
@@ -93,14 +94,22 @@ else:
     device = -1
 device_choose.append(-1)
 
+"""
+需要由其它函数初始化的变量
+"""
+text_vocab = None
+aspect_vocab = None
+text_vocab_size = 0
+aspect_vocab_size = 0
+
 
 def init_parameters(opt):
     global learning_rate, epoch_num, train_batch_size, val_batch_size, test_batch_size, \
         batch_size_tuple, model_name, optim_name, if_step_verify, early_stop, shuffle, \
-        loss_name
+        loss_name, model, optimizer, criterion
     global embed_size, hidden_size, target_size, dropout_rate
     global train_val_ratio, max_sen_length, max_asp_length
-    global log_dir, log_step, device
+    global log_dir, log_step, device, pretrain,pretrain_path
 
     learning_rate = opt.learning_rate
     epoch_num = opt.epoch_num
@@ -132,3 +141,5 @@ def init_parameters(opt):
     log_dir = opt.log_dir
     log_step = opt.log_step
     device = opt.device
+    pretrain = opt.pretrain
+    pretrain_path = opt.pretrain_path

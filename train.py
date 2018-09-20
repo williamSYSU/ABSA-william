@@ -17,16 +17,7 @@ restore_loss = []
 
 
 class Instructor:
-    def __init__(self, opt):
-        self.opt = opt
-        self.final_avg_loss = 0
-
-        # 输出模型参数
-        # print('=' * 100)
-        # print('> training arguments:')
-        # for arg in vars(opt):
-        #     print('>>> {}: {}'.format(arg, getattr(opt, arg)))
-
+    def __init__(self):
         self.all_data = ABSAData()
         self.train_iter = self.all_data.train_iter
         self.val_iter = self.all_data.val_iter
@@ -36,28 +27,18 @@ class Instructor:
         self.aspect_vocab = self.all_data.aspect_vocab
         self.label_vocab = self.all_data.label_vocab
 
-        self.model = config.model().to(config.device)
+        device_dict = {
+            -1: 'cpu',
+            0: 'cuda:0',
+            1: 'cuda:1',
+            2: 'cuda:2',
+        }
+        self.model = config.model().to(device_dict[config.device])
         self.criterion = config.criterion()
-        self.optimizer = config.optimizer(self.model.parameters(), lr=config.learning_rate)
+        self.optimizer = config.optimizer(
+            filter(lambda p: p.requires_grad, self.model.parameters()),
+            lr=config.learning_rate)
         self.writer = SummaryWriter(log_dir=config.log_dir)
-
-    # 训练之前在验证集上的效果
-    def before_train(self):
-        self.model.eval()  # 切换到验证模式
-        with torch.no_grad():
-            print('=' * 100)
-            print("> Before learning:")
-            sum_loss = 0
-            for idx, sample_batch in enumerate(self.val_iter):
-                text = sample_batch.Text
-                aspect = sample_batch.Aspect
-                label = sample_batch.Label
-
-                outputs = self.model(text, aspect)
-
-                loss = self.criterion(outputs, label)
-                sum_loss += loss
-            print(">>> Average loss:", float(sum_loss / len(self.val_iter)))
 
     def begin_train(self):
         print('=' * 100)
@@ -82,10 +63,11 @@ class Instructor:
                 label = sample_batch.Label
 
                 # 计算模型的输出
-                outputs = self.model(text, aspect)[:, 1].view(-1)
+                outputs = self.model(text, aspect)
+
                 # 指定一个batch查看其在每轮的优化效果如何
-                if idx is 5:
-                    print('output: {}\nlabel: {}'.format(outputs, label))
+                # if idx is 5:
+                #     print('output: {}\nlabel: {}'.format(outputs, label))
 
                 # 计算loss，并更新参数
                 loss = self.criterion(outputs, label)
@@ -93,7 +75,7 @@ class Instructor:
                 self.optimizer.step()
 
                 # 查看模型在验证集上的验证效果
-                if self.opt.if_step_verify is 1 and global_step % self.opt.log_step is 0:
+                if config.if_step_verify and global_step % config.log_step is 0:
                     verify_loss = self.verify_model()
                     self.writer.add_scalar('Verify Loss', verify_loss, global_step)
                     min_verify_loss = min(min_verify_loss, verify_loss)
@@ -106,9 +88,9 @@ class Instructor:
             self.writer.add_scalar('Train_Loss', loss, epoch)  # 画loss曲线
 
             # "早停"策略，loss低于设定值时，停止训练
-            if loss.item() <= self.opt.early_stop:
+            if loss.item() <= config.early_stop:
                 print('> !!!Training is forced to stop!!!')
-                print('> Current loss: {}, threshold loss: {}'.format(loss.item(), self.opt.early_stop))
+                print('> Current loss: {}, threshold loss: {}'.format(loss.item(), config.early_stop))
                 break
 
         self.writer.close()
@@ -120,8 +102,8 @@ class Instructor:
 
     def verify_model(self):
         self.model.eval()  # 设置模型为验证模式
-
         sum_loss = 0
+
         with torch.no_grad():
             for idx, sample_batch in enumerate(self.val_iter):
                 self.model.zero_grad()
@@ -130,7 +112,7 @@ class Instructor:
                 aspect = sample_batch.Aspect
                 label = sample_batch.Label
 
-                outputs = self.model(text, aspect)[:, 1].view(-1)
+                outputs = self.model(text, aspect)
 
                 loss = self.criterion(outputs, label)
                 sum_loss += loss
@@ -154,9 +136,17 @@ class Instructor:
     # 保存预训练模型
     def save_model(self, loss, ac_rate):
         # 保存模型参数以及Loss
-        save_path = 'pretrained_model/{model_name}_{loss}_{ac_rate}.pm'.format(
+        save_path = 'pretrained_model/{model_name}_{loss}_{ac_rate}'.format(
             model_name=config.model_name,
             loss=loss,
             ac_rate=ac_rate
         )
-        torch.save(self.model, save_path)
+        torch.save(self.model.state_dict(), save_path)
+
+    def load_model(self, path):
+        if config.pretrain:
+            pre_trained_dict = torch.load(path, map_location=lambda storage, loc: storage)
+            model_dict = self.model.state_dict()
+            pre_trained_dict = {k: v for k, v in pre_trained_dict.items() if k in model_dict}
+            model_dict.update(pre_trained_dict)
+            self.model.load_state_dict(model_dict)

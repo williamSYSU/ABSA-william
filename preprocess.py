@@ -19,10 +19,10 @@ spacy_en = spacy.load('en')
 
 def write_file(filename, sentences):
     polarity_dict = {
-        'positive': '1',
-        'negative': '-1',
-        'neutral': '0',
-        'conflict': '2'
+        'positive': '2',
+        'neutral': '1',
+        'negative': '0',
+        'conflict': '-1'
     }
     with open(filename, encoding='utf-8', mode='wt') as file:
         for sentence in sentences:
@@ -43,12 +43,12 @@ def write_file(filename, sentences):
                 # file.write(sentence.getElementsByTagName('text')[0].childNodes[0].data + '\n')
 
 
-def xml_to_pre():
-    laptop_data_file = 'dataset/laptops_train.xml'
-    restaurant_data_file = 'dataset/restaurants_train.xml'
+def xml_to_pre(type):
+    laptop_data_file = 'dataset/laptops_{}.xml'.format(type)
+    restaurant_data_file = 'dataset/restaurants_{}.xml'.format(type)
 
-    save_laptop_train_file = 'dataset/laptops_train.pre'
-    save_restaurant_train_file = 'dataset/restaurant_train.pre'
+    save_laptop_train_file = 'dataset/laptops_{}.pre'.format(type)
+    save_restaurant_train_file = 'dataset/restaurant_{}.pre'.format(type)
 
     laptop_data_dom = parse(laptop_data_file)
     sentences = laptop_data_dom.getElementsByTagName('sentence')
@@ -59,12 +59,12 @@ def xml_to_pre():
     write_file(save_restaurant_train_file, sentences)
 
 
-def pre_to_tsv():
-    laptop_train_file = 'dataset/laptops_train.pre'
-    restaurant_train_file = 'dataset/restaurant_train.pre'
+def pre_to_tsv(type):
+    laptop_train_file = 'dataset/laptops_{}.pre'.format(type)
+    restaurant_train_file = 'dataset/restaurant_{}.pre'.format(type)
 
-    save_laptop_train_file = 'dataset/laptops_train.tsv'
-    save_restaurant_train_file = 'dataset/restaurant_train.tsv'
+    save_laptop_train_file = 'dataset/laptops_{}.tsv'.format(type)
+    save_restaurant_train_file = 'dataset/restaurant_{}.tsv'.format(type)
 
     with open(laptop_train_file, encoding='utf-8', mode='r') as src_file:
         with open(save_laptop_train_file, encoding='utf=8', mode='w') as tar_file:
@@ -112,6 +112,7 @@ def count_max_length(index):
 
 
 if __name__ == '__main__':
-    absa_data = ABSAData()
-    # print(absa_data.text_vocab.freqs)
-    print('current device:' + str(config.device))
+    xml_to_pre('train')
+    pre_to_tsv('train')
+    xml_to_pre('test')
+    pre_to_tsv('test')

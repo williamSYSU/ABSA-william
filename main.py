@@ -66,13 +66,23 @@ if __name__ == '__main__':
                         help='>>> Early stop threshold. default: {}'.format(config.early_stop))
     parser.add_argument('--shuffle', default=config.shuffle, type=int,
                         help='>>> default: {}'.format(config.shuffle))
+    parser.add_argument('--pretrain', default=config.pretrain, type=int,
+                        help='>>> default: {}'.format(config.pretrain))
+    parser.add_argument('--pretrain_path', default=config.pretrain_path, type=str,
+                        help='>>> default: {}'.format(config.pretrain_path))
     opt = parser.parse_args()
 
     # 初始化config
     config.init_parameters(opt)
 
-    instructor = Instructor(opt)
+    # 输出模型参数
+    print('=' * 100)
+    print('> training arguments:')
+    for arg in vars(opt):
+        print('>>> {}: {}'.format(arg, getattr(opt, arg)))
 
-    for idx, sample in enumerate(instructor.train_iter):
-        print(idx)
-        print(sample.Label)
+    # 准备训练模型数据
+    instructor = Instructor()
+
+    # 开始训练模型
+    instructor.begin_train()
