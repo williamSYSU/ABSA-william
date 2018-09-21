@@ -64,6 +64,7 @@ class Instructor:
 
                 # 计算模型的输出
                 outputs = self.model(text, aspect)
+                # print('outputs:', outputs, outputs.size())
 
                 # 指定一个batch查看其在每轮的优化效果如何
                 # if idx is 5:

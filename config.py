@@ -12,13 +12,13 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
+from models.atae_lstm import ATAE_LSTM
 from models.bi_lstm import Bi_LSTM
-from models.lstm import LSTM
 
 # 模型种类
 model_classes = {
     'bi_lstm': Bi_LSTM,
-    'lstm': LSTM,
+    'atae_lstm': ATAE_LSTM,
 }
 
 # 优化器种类
@@ -35,6 +35,7 @@ optimizers = {
 criterions = {
     'bce': nn.BCELoss,
     'mse': nn.MSELoss,
+    'nll': nn.NLLLoss,
     'cross_entropy': nn.CrossEntropyLoss,
     'cos_embed': nn.CosineEmbeddingLoss
 }
@@ -42,14 +43,14 @@ criterions = {
 """
 训练过程的可调参数
 """
-learning_rate = 0.01
-epoch_num = 500
+learning_rate = 0.00001
+epoch_num = 100
 train_batch_size = 16
 val_batch_size = 64
 test_batch_size = 64
 batch_size_tuple = (train_batch_size, val_batch_size, test_batch_size)
-model_name = 'lstm'
-optim_name = 'sgd'
+model_name = 'atae_lstm'
+optim_name = 'adagrad'
 loss_name = 'cross_entropy'
 model = model_classes[model_name]
 optimizer = optimizers[optim_name]
@@ -57,7 +58,7 @@ criterion = criterions[loss_name]
 
 if_step_verify = 0  # 是否在训练中验证
 early_stop = 0.001  # 早停策略的阈值，loss低于这个阈值则停止训练
-shuffle = 0         # 是否打乱每一轮的batch
+shuffle = 0  # 是否打乱每一轮的batch
 """
 模型结构的可调参数
 """
@@ -65,20 +66,22 @@ embed_size = 300
 hidden_size = 300
 target_size = 3
 dropout_rate = 0.3
+uniform_rate = 0.01
 
-if_embed_trainable = 0  # 设置词向量是否可训练
+if_embed_trainable = 1  # 设置词向量是否可训练
 """
 数据集的可调参数
 """
 train_val_ratio = 0.99  # 训练集和测试集的比例
-max_sen_length = 80     # 最大句子长度
-max_asp_length = 20     # 最大词向量长度
+max_sen_len = 80  # 最大句子长度
+max_asp_len = 20  # 最大词向量长度
+# max_asp_len = 20     # 最大词向量长度
 """
 其它可调参数
 """
-log_dir = 'log'     # tensorboard路径
-log_step = 20       # 记录loss的步长
-pretrain = 0        # 设置是否使用预训练模型
+log_dir = 'log'  # tensorboard路径
+log_step = 20  # 记录loss的步长
+pretrain = 0  # 设置是否使用预训练模型
 pretrain_path = ''  # 设置预训练模型路径
 
 # Automatically choose GPU or CPU
@@ -108,8 +111,8 @@ def init_parameters(opt):
         batch_size_tuple, model_name, optim_name, if_step_verify, early_stop, shuffle, \
         loss_name, model, optimizer, criterion
     global embed_size, hidden_size, target_size, dropout_rate
-    global train_val_ratio, max_sen_length, max_asp_length
-    global log_dir, log_step, device, pretrain,pretrain_path
+    global train_val_ratio, max_sen_len, max_asp_len
+    global log_dir, log_step, device, pretrain, pretrain_path
 
     learning_rate = opt.learning_rate
     epoch_num = opt.epoch_num
@@ -135,8 +138,8 @@ def init_parameters(opt):
 
     dropout_rate = opt.dropout_rate
     train_val_ratio = opt.train_val_ratio
-    max_sen_length = opt.max_sen_length
-    max_asp_length = opt.max_asp_length
+    max_sen_len = opt.max_sen_len
+    max_asp_len = opt.max_asp_len
 
     log_dir = opt.log_dir
     log_step = opt.log_step

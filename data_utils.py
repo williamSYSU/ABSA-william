@@ -20,11 +20,11 @@ class ABSAData():
         TEXT = data.Field(
             sequential=True, lower=True, batch_first=True,
             tokenize=self.tokenizer, preprocessing=self.clean_symbol,
-            fix_length=config.max_sen_length
+            fix_length=config.max_sen_len
         )
         ASPECT = data.Field(
             sequential=True, lower=True, batch_first=True,
-            fix_length=config.max_asp_length
+            fix_length=config.max_asp_len
         )
         LABEL = data.Field(
             sequential=False, use_vocab=False, batch_first=True

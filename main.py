@@ -52,10 +52,10 @@ if __name__ == '__main__':
                         help='>>> default: {}'.format(config.target_size))
     parser.add_argument('--train_val_ratio', default=config.train_val_ratio, type=float,
                         help='>>> default: {}'.format(config.train_val_ratio))
-    parser.add_argument('--max_sen_length', default=config.max_sen_length, type=int,
-                        help='>>> default: {}'.format(config.max_sen_length))
-    parser.add_argument('--max_asp_length', default=config.max_asp_length, type=int,
-                        help='>>> default: {}'.format(config.max_asp_length))
+    parser.add_argument('--max_sen_len', default=config.max_sen_len, type=int,
+                        help='>>> default: {}'.format(config.max_sen_len))
+    parser.add_argument('--max_asp_len', default=config.max_asp_len, type=int,
+                        help='>>> default: {}'.format(config.max_asp_len))
     parser.add_argument('--log_dir', default=config.log_dir, type=str,
                         help='>>> Path to log loss data. default: {}'.format(config.log_dir))
     parser.add_argument('--log_step', default=config.log_step, type=int,
