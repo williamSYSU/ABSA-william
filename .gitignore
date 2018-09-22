@@ -1,6 +1,5 @@
 # Added by William
 .idea/
-dataset/
 .vector_cache/
 .DS_Store
 */.DS_Store
