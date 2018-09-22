@@ -8,6 +8,8 @@
 # Copyrights (C) 2018. All Rights Reserved.
 
 import spacy
+import torch
+import torch.nn as nn
 from torchtext import data
 
 import config
@@ -23,7 +25,7 @@ class ABSAData():
             fix_length=config.max_sen_len
         )
         ASPECT = data.Field(
-            sequential=True, lower=True, batch_first=True,
+            sequential=True, lower=True, batch_first=True, preprocessing=self.clean_symbol,
             fix_length=config.max_asp_len
         )
         LABEL = data.Field(
@@ -47,8 +49,8 @@ class ABSAData():
         )
 
         # Build vocab for Field TEXT, ASPECT and LABEL
-        TEXT.build_vocab(train, val, test, vectors='glove.840B.300d')
-        ASPECT.build_vocab(train, val, test, vectors='glove.840B.300d')
+        TEXT.build_vocab(train, val, test, vectors='glove.840B.300d', unk_init=self.unk_init_uniform)
+        ASPECT.build_vocab(train, val, test, vectors='glove.840B.300d', unk_init=self.unk_init_uniform)
         LABEL.build_vocab(train, val, test)
 
         # Get Iterator for train, validation and test data
@@ -88,3 +90,11 @@ class ABSAData():
         """
         ex_symbol = [',', '.', '!', '?', '"', '\'']
         return [i for i in text if i not in ex_symbol]
+
+    def unk_init_uniform(self, text):
+        """
+        词典里面没有的词用均匀分布来初始化。
+        :return: uniform vectors
+        """
+        vec = torch.empty(1, config.embed_size)
+        return nn.init.uniform_(vec, a=-config.uniform_rate, b=config.uniform_rate)

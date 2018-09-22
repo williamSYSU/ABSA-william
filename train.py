@@ -37,7 +37,8 @@ class Instructor:
         self.criterion = config.criterion()
         self.optimizer = config.optimizer(
             filter(lambda p: p.requires_grad, self.model.parameters()),
-            lr=config.learning_rate)
+            lr=config.learning_rate,
+            weight_decay=0.001)
         self.writer = SummaryWriter(log_dir=config.log_dir)
 
     def begin_train(self):
@@ -64,7 +65,6 @@ class Instructor:
 
                 # 计算模型的输出
                 outputs = self.model(text, aspect)
-                # print('outputs:', outputs, outputs.size())
 
                 # 指定一个batch查看其在每轮的优化效果如何
                 # if idx is 5:

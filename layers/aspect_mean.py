@@ -15,6 +15,7 @@ class AspectMean(nn.Module):
     """
     Get aspect mean embedding.
     """
+
     def __init__(self, max_sen_len):
         """
         :param max_sen_len: maximum length of sentence
@@ -22,14 +23,14 @@ class AspectMean(nn.Module):
         super(AspectMean, self).__init__()
         self.max_sen_len = max_sen_len
 
-    def forward(self, aspect):
+    def forward(self, text, aspect, text_vocab):
         """
 
         :param aspect: size: [batch_size, max_asp_len, embed_size]
         :return: aspect mean embedding, size: [batch_size, max_sen_len, embed_size]
         """
-        aspect_len = torch.sum(aspect != 0, dim=2)
-        aspect_len = torch.sum(aspect_len != 0, dim=1).unsqueeze(dim=1).float()
+        len_tmp = torch.sum(aspect != 0, dim=2)
+        aspect_len = torch.sum(len_tmp != 0, dim=1).unsqueeze(dim=1).float()
         out = aspect.sum(dim=1)
         # 求均值后，匹配句子长度，复制多个aspect embedding
         out = out.div(aspect_len).unsqueeze(dim=1).expand(-1, self.max_sen_len, -1)

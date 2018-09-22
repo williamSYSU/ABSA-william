@@ -20,17 +20,15 @@ class Attention(nn.Module):
     """
 
     def __init__(self, batch_size, embed_size, hidden_size, uniform_rate):
-        # TODO: 把Parameter改为Linear
         super(Attention, self).__init__()
         self.uniform_rate = uniform_rate
-        self.w_text = nn.Parameter(torch.Tensor(batch_size, hidden_size, hidden_size))
-        self.w_aspect = nn.Parameter(torch.Tensor(batch_size, embed_size, embed_size))
-        self.w_combine = nn.Parameter(torch.Tensor(batch_size, 1, hidden_size + embed_size))
+        self.w_text = nn.Linear(hidden_size, hidden_size, bias=False)
+        self.w_aspect = nn.Linear(hidden_size, hidden_size, bias=False)
+        self.w_combine = nn.Linear(2 * hidden_size, 1, bias=False)
         self.tanh = nn.Tanh()
-        self.com_softmax = nn.Softmax(dim=2)
-        self.final_softmax = nn.Softmax(dim=1)
+        self.softmax = nn.Softmax(dim=1)
 
-        self.reset_parameters()
+        # self.reset_parameters()
 
     def forward(self, text, aspect):
         """
@@ -41,18 +39,16 @@ class Attention(nn.Module):
             "weight" of shape (batch_size, 1, max_sen_len)
             "out" of shape (batch_size, 1, hidden_size)
         """
-        text_out = text.permute(0, 2, 1)
-        aspect_out = aspect.permute(0, 2, 1)
-        m_text = torch.bmm(self.w_text, text_out)
-        m_aspect = torch.bmm(self.w_aspect, aspect_out)
+        m_text = self.w_text(text)
+        m_aspect = self.w_text(aspect)
 
-        commbine = self.tanh(torch.cat((m_text, m_aspect), dim=1))
-        tmp = torch.bmm(self.w_combine, commbine)
-        weight = self.com_softmax(torch.bmm(self.w_combine, commbine))
-        out = torch.bmm(text_out, weight.permute(0, 2, 1)).permute(0, 2, 1)
+        commbine = self.tanh(torch.cat((m_text, m_aspect), dim=2))
+        weight = self.w_combine(commbine)
+        weight = self.softmax(weight).permute(0, 2, 1)
+        out = torch.bmm(weight, text)
         return weight, out
 
     def reset_parameters(self):
-        self.w_text.data.uniform_(-self.uniform_rate, self.uniform_rate)
-        self.w_aspect.data.uniform_(-self.uniform_rate, self.uniform_rate)
-        self.w_combine.data.uniform_(-self.uniform_rate, self.uniform_rate)
+        self.w_text.weight.data.uniform_(-self.uniform_rate, self.uniform_rate)
+        self.w_aspect.weight.data.uniform_(-self.uniform_rate, self.uniform_rate)
+        self.w_combine.weight.data.uniform_(-self.uniform_rate, self.uniform_rate)

@@ -43,9 +43,9 @@ criterions = {
 """
 训练过程的可调参数
 """
-learning_rate = 0.00001
+learning_rate = 0.01
 epoch_num = 100
-train_batch_size = 16
+train_batch_size = 25
 val_batch_size = 64
 test_batch_size = 64
 batch_size_tuple = (train_batch_size, val_batch_size, test_batch_size)
