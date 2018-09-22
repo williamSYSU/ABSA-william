@@ -46,8 +46,8 @@ criterions = {
 learning_rate = 0.01
 epoch_num = 100
 train_batch_size = 25
-val_batch_size = 64
-test_batch_size = 64
+val_batch_size = 25
+test_batch_size = 25
 batch_size_tuple = (train_batch_size, val_batch_size, test_batch_size)
 model_name = 'atae_lstm'
 optim_name = 'adagrad'
@@ -56,9 +56,12 @@ model = model_classes[model_name]
 optimizer = optimizers[optim_name]
 criterion = criterions[loss_name]
 
-if_step_verify = 0  # 是否在训练中验证
-early_stop = 0.001  # 早停策略的阈值，loss低于这个阈值则停止训练
-shuffle = 0  # 是否打乱每一轮的batch
+if_step_verify = 1  # 是否在训练中验证
+early_stop = 0.01  # 早停策略的阈值，loss低于这个阈值则停止训练
+shuffle = 1  # 是否打乱每一轮的batch
+pretrain = 0  # 设置是否使用预训练模型
+model_filename = 'atae_lstm_0.706951_0.758621.pkl'
+pretrain_path = os.path.join('pretrained_model', model_filename)  # 设置预训练模型路径
 """
 模型结构的可调参数
 """
@@ -72,17 +75,14 @@ if_embed_trainable = 1  # 设置词向量是否可训练
 """
 数据集的可调参数
 """
-train_val_ratio = 0.99  # 训练集和测试集的比例
+train_val_ratio = 0.7  # 训练集和测试集的比例
 max_sen_len = 80  # 最大句子长度
 max_asp_len = 20  # 最大词向量长度
-# max_asp_len = 20     # 最大词向量长度
 """
 其它可调参数
 """
 log_dir = 'log'  # tensorboard路径
-log_step = 20  # 记录loss的步长
-pretrain = 0  # 设置是否使用预训练模型
-pretrain_path = ''  # 设置预训练模型路径
+log_step = 5  # 记录loss的步长
 
 # Automatically choose GPU or CPU
 if torch.cuda.is_available():

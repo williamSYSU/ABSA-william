@@ -17,7 +17,7 @@ import config
 spacy_en = spacy.load('en')
 
 
-class ABSAData():
+class ABSAData:
     def __init__(self):
         TEXT = data.Field(
             sequential=True, lower=True, batch_first=True,
@@ -35,7 +35,7 @@ class ABSAData():
         # Get data from .tsv file
         train_and_val, test = data.TabularDataset.splits(
             path='dataset/', format='tsv',
-            train='laptops_train.tsv', test='laptops_test.tsv',
+            train='train.tsv', test='test.tsv',
             fields=[
                 ('Text', TEXT),
                 ('Aspect', ASPECT),

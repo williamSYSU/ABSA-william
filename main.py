@@ -86,3 +86,6 @@ if __name__ == '__main__':
 
     # 开始训练模型
     instructor.begin_train()
+
+    # 测试模型
+    instructor.test_model()
