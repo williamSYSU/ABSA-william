@@ -145,7 +145,7 @@ class Instructor:
         # 保存模型参数以及Loss
         print('=' * 100)
         print('Saving model...')
-        save_path = 'pretrained_model/{model_name}_{loss:.6f}_{ac_rate:.6f}.pkl'.format(
+        save_path = 'pretrained_model/{model_name}_loss{loss:.6f}_ac{ac_rate:.6f}.pkl'.format(
             model_name=config.model_name,
             loss=loss,
             ac_rate=ac_rate

@@ -43,7 +43,7 @@ criterions = {
 """
 训练过程的可调参数
 """
-learning_rate = 0.01
+learning_rate = 0.001
 epoch_num = 100
 train_batch_size = 25
 val_batch_size = 25
@@ -59,8 +59,8 @@ criterion = criterions[loss_name]
 if_step_verify = 1  # 是否在训练中验证
 early_stop = 0.01  # 早停策略的阈值，loss低于这个阈值则停止训练
 shuffle = 1  # 是否打乱每一轮的batch
-pretrain = 0  # 设置是否使用预训练模型
-model_filename = 'atae_lstm_0.706951_0.758621.pkl'
+pretrain = 1  # 设置是否使用预训练模型
+model_filename = 'atae_lstm_0.901715_0.806897.pkl'
 pretrain_path = os.path.join('pretrained_model', model_filename)  # 设置预训练模型路径
 """
 模型结构的可调参数
