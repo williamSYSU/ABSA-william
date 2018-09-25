@@ -49,7 +49,7 @@ class ATAE_LSTM(nn.Module):
 
         # 处理aspect，aspect做均值处理
         aspect_out = self.aspect_embed(aspect)
-        aspect_out = self.aspect_mean(text, aspect_out, config.text_vocab)
+        aspect_out = self.aspect_mean(aspect_out)
 
         # 拼接text和aspect
         combine = torch.cat((text_out, aspect_out), dim=2)

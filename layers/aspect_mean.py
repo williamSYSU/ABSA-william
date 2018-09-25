@@ -23,7 +23,7 @@ class AspectMean(nn.Module):
         super(AspectMean, self).__init__()
         self.max_sen_len = max_sen_len
 
-    def forward(self, text, aspect, text_vocab):
+    def forward(self, aspect):
         """
 
         :param aspect: size: [batch_size, max_asp_len, embed_size]
