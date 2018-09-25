@@ -62,5 +62,6 @@ class ATAE_LSTM(nn.Module):
         r_out = self.proj1(at_out.squeeze(dim=1))
         hn_out = self.proj2(lstm_out[:, config.max_sen_len - 1, :].squeeze(dim=1))
         h_out = self.tanh(r_out + hn_out)
-        out = self.softmax(self.fc(h_out))
+        out = self.fc(h_out)
+        # out = self.softmax(self.fc(h_out))
         return out

@@ -61,7 +61,7 @@ class Instructor:
             for idx, sample_batch in enumerate(self.train_iter):
                 global_step += 1
 
-                self.model.train()  # 切换模型至训练模式
+                self.model.train()  # 切换模型至训练模式l
                 self.model.zero_grad()  # 清空积累的梯度
 
                 # 取训练数据和标签
@@ -74,8 +74,9 @@ class Instructor:
 
                 # 显示某个batch的值
                 if idx is 5:
-                    print('output:', outputs)
-                    print('label:', label)
+                    # print('output:', outputs)
+                    # print('label:', label)
+                    pass
 
                 # 计算loss，并更新参数
                 loss = self.criterion(outputs, label)

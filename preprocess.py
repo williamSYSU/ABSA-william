@@ -7,9 +7,13 @@
 # @Description  : 测试数据集，预处理数据集
 # Copyrights (C) 2018. All Rights Reserved.
 
+import math
 from xml.dom.minidom import parse
 
+import random
 import spacy
+
+import config
 
 spacy_en = spacy.load('en')
 
@@ -174,9 +178,31 @@ def fill_aspect():
     print('fill done!')
 
 
+def split_train_val():
+    all_train = 'dataset/all_train.tsv'
+    train_file = 'dataset/train.tsv'
+    val_file = 'dataset/val.tsv'
+    all_lines = []
+    with open(all_train, 'r') as file:
+        for line in file:
+            all_lines.append(line)
+
+    random.shuffle(all_lines)
+    point = math.floor(config.train_val_ratio * len(all_lines))
+    train_lines = all_lines[:point]
+    val_lines = all_lines[point:]
+
+    with open(train_file, 'w') as file:
+        for line in train_lines:
+            file.write(line)
+    with open(val_file, 'w') as file:
+        for line in val_lines:
+            file.write(line)
+
+
 if __name__ == '__main__':
     # xml_to_pre('train')
     # pre_to_tsv('train')
     # xml_to_pre('test')
     # pre_to_tsv('test')
-    fill_aspect()
+    split_train_val()

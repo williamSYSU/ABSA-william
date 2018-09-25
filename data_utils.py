@@ -34,7 +34,7 @@ class ABSAData:
 
         # Get data from .tsv file
         # TODO: 去停词处理
-        train, val, test = data.TabularDataset.splits(
+        train,val, test = data.TabularDataset.splits(
             path='dataset/', format='tsv',
             train=config.train_file, validation=config.val_file, test=config.test_file,
             fields=[
