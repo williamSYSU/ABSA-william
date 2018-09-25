@@ -44,11 +44,11 @@ criterions = {
 """
 训练过程的可调参数
 """
-learning_rate = 0.01
-epoch_num = 100
-train_batch_size = 25
-val_batch_size = 25
-test_batch_size = 25
+learning_rate = 0.001
+epoch_num = 10
+train_batch_size = 8
+val_batch_size = 16
+test_batch_size = 16
 batch_size_tuple = (train_batch_size, val_batch_size, test_batch_size)
 model_name = 'atae_lstm'
 optim_name = 'adagrad'
@@ -57,9 +57,9 @@ model = model_classes[model_name]
 optimizer = optimizers[optim_name]
 criterion = criterions[loss_name]
 
-if_step_verify = 1  # 是否在训练中验证
+if_step_verify = 0  # 是否在训练中验证
 early_stop = 0.01  # 早停策略的阈值，loss低于这个阈值则停止训练
-shuffle = 1  # 是否打乱每一轮的batch
+shuffle = 0  # 是否打乱每一轮的batch
 pretrain = 0  # 设置是否使用预训练模型
 model_filename = 'atae_lstm_0.901715_0.806897.pkl'
 pretrain_path = os.path.join('pretrained_model', model_filename)  # 设置预训练模型路径
@@ -80,13 +80,13 @@ train_val_ratio = 0.8  # 训练集和测试集的比例
 max_sen_len = 80  # 最大句子长度
 max_asp_len = 20  # 最大词向量长度
 train_file = 'train.tsv'
-val_file = 'lap_test.tsv'
-test_file = 'lap_test.tsv'
+val_file = 'rest_test.tsv'
+test_file = 'rest_test.tsv'
 """
 其它可调参数
 """
 log_dir = 'log'  # tensorboard路径
-log_step = 10  # 记录验证效果的步长
+log_step = 20  # 记录验证效果的步长
 
 # Automatically choose GPU or CPU
 if torch.cuda.is_available():

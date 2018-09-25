@@ -72,6 +72,11 @@ class Instructor:
                 # 计算模型的输出
                 outputs = self.model(text, aspect)
 
+                # 显示某个batch的值
+                if idx is 5:
+                    print('output:', outputs)
+                    print('label:', label)
+
                 # 计算loss，并更新参数
                 loss = self.criterion(outputs, label)
                 loss.backward()
