@@ -42,7 +42,7 @@ class Instructor:
         self.optimizer = config.optimizer(
             filter(lambda p: p.requires_grad, self.model.parameters()),
             lr=config.learning_rate,
-            lr_decay=0.001,
+            # lr_decay=0.001,
             weight_decay=0.001)
         self.writer = SummaryWriter(log_dir=config.log_dir)
 
@@ -80,7 +80,7 @@ class Instructor:
                 # 查看模型在验证集上的验证效果
                 if config.if_step_verify and global_step % config.log_step is 0:
                     ac_rate = self.cal_ac_rate(self.val_iter)
-                    self.writer.add_scalar('Accurate rate:', ac_rate, global_step)
+                    self.writer.add_scalar('Accurate_rate', ac_rate, global_step)
                     max_ac_rate = max(max_ac_rate, ac_rate)
 
             print('>> epoch {} of {}, -loss: {} -min loss: {} -ac_rate: {} -max ac_rate: {}'.format(
@@ -101,7 +101,7 @@ class Instructor:
     def begin_verify(self):
         print('=' * 100)
         print('> Begin verify......')
-        print('>>> Verify loss: ', self.cal_ac_rate(self.val_iter))
+        print('>>> Accurate rate: ', self.cal_ac_rate(self.val_iter))
 
     def cal_ac_rate(self, data_iter):
         self.model.eval()  # 设置模型为验证模式

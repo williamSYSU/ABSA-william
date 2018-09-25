@@ -33,9 +33,9 @@ class ABSAData:
         )
 
         # Get data from .tsv file
-        train_and_val, test = data.TabularDataset.splits(
+        train, val, test = data.TabularDataset.splits(
             path='dataset/', format='tsv',
-            train='train.tsv', test='test.tsv',
+            train=config.train_file, validation=config.val_file, test=config.test_file,
             fields=[
                 ('Text', TEXT),
                 ('Aspect', ASPECT),
@@ -44,9 +44,9 @@ class ABSAData:
         )
 
         # Split data into train set and validation set
-        train, val = train_and_val.split(
-            split_ratio=config.train_val_ratio
-        )
+        # train, val = train_and_val.split(
+        #     split_ratio=config.train_val_ratio
+        # )
 
         # Build vocab for Field TEXT, ASPECT and LABEL
         TEXT.build_vocab(train, val, test, vectors='glove.840B.300d', unk_init=self.unk_init_uniform)
@@ -67,6 +67,9 @@ class ABSAData:
         self.text_vocab = TEXT.vocab
         self.aspect_vocab = ASPECT.vocab
         self.label_vocab = LABEL.vocab
+
+        # initialize vocab with special vectors
+        self.ini_vocob()
 
         # Set vocab size in config
         config.text_vocab = self.text_vocab
@@ -98,3 +101,10 @@ class ABSAData:
         """
         vec = torch.empty(1, config.embed_size)
         return nn.init.uniform_(vec, a=-config.uniform_rate, b=config.uniform_rate)
+
+    def ini_vocob(self):
+        tx_pad_idx = self.text_vocab.stoi['<pad>']
+        as_pad_idx = self.aspect_vocab.stoi['<pad>']
+        zero_vec = torch.zeros(1, config.embed_size)
+        self.text_vocab.vectors[tx_pad_idx] = zero_vec
+        self.aspect_vocab.vectors[as_pad_idx] = zero_vec

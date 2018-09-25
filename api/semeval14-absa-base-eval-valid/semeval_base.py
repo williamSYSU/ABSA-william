@@ -84,7 +84,8 @@ def validate(filename):
     return elements, aspects
 
 
-fix = lambda text: escape(text.encode('utf8')).replace('\"', '&quot;')
+# fix = lambda text: escape(text.encode('utf8')).replace('\"', '&quot;')
+fix = lambda text: escape(text).replace('\"', '&quot;')
 '''Simple fix for writing out text.'''
 
 # Dice coefficient

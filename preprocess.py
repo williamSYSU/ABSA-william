@@ -11,9 +11,6 @@ from xml.dom.minidom import parse
 
 import spacy
 
-import config
-from data_utils import ABSAData
-
 spacy_en = spacy.load('en')
 
 
@@ -44,30 +41,30 @@ def write_file(filename, sentences):
 
 
 def xml_to_pre(type):
-    laptop_data_file = 'dataset/laptops_{}.xml'.format(type)
-    restaurant_data_file = 'dataset/restaurants_{}.xml'.format(type)
+    lap_data_file = 'dataset/lap_{}.xml'.format(type)
+    rest_data_file = 'dataset/rest_{}.xml'.format(type)
 
-    save_laptop_train_file = 'dataset/laptops_{}.pre'.format(type)
-    save_restaurant_train_file = 'dataset/restaurant_{}.pre'.format(type)
+    save_lap_train_file = 'dataset/lap_{}.pre'.format(type)
+    save_rest_train_file = 'dataset/rest_{}.pre'.format(type)
 
-    laptop_data_dom = parse(laptop_data_file)
-    sentences = laptop_data_dom.getElementsByTagName('sentence')
-    write_file(save_laptop_train_file, sentences)
+    lap_data_dom = parse(lap_data_file)
+    sentences = lap_data_dom.getElementsByTagName('sentence')
+    write_file(save_lap_train_file, sentences)
 
-    restaurant_data_dom = parse(restaurant_data_file)
-    sentences = restaurant_data_dom.getElementsByTagName('sentence')
-    write_file(save_restaurant_train_file, sentences)
+    rest_data_dom = parse(rest_data_file)
+    sentences = rest_data_dom.getElementsByTagName('sentence')
+    write_file(save_rest_train_file, sentences)
 
 
 def pre_to_tsv(type):
-    laptop_train_file = 'dataset/laptops_{}.pre'.format(type)
-    restaurant_train_file = 'dataset/restaurant_{}.pre'.format(type)
+    lap_train_file = 'dataset/lap_{}.pre'.format(type)
+    rest_train_file = 'dataset/rest_{}.pre'.format(type)
 
-    save_laptop_train_file = 'dataset/laptops_{}.tsv'.format(type)
-    save_restaurant_train_file = 'dataset/restaurant_{}.tsv'.format(type)
+    save_lap_train_file = 'dataset/lap_{}.tsv'.format(type)
+    save_rest_train_file = 'dataset/rest_{}.tsv'.format(type)
 
-    with open(laptop_train_file, encoding='utf-8', mode='r') as src_file:
-        with open(save_laptop_train_file, encoding='utf=8', mode='w') as tar_file:
+    with open(lap_train_file, encoding='utf-8', mode='r') as src_file:
+        with open(save_lap_train_file, encoding='utf=8', mode='w') as tar_file:
             idx = 0
             for line in src_file:
                 tar_file.write(line.strip())
@@ -77,8 +74,8 @@ def pre_to_tsv(type):
                     tar_file.write('\n')
                 idx += 1
 
-    with open(restaurant_train_file, encoding='utf-8', mode='r') as src_file:
-        with open(save_restaurant_train_file, encoding='utf=8', mode='w') as tar_file:
+    with open(rest_train_file, encoding='utf-8', mode='r') as src_file:
+        with open(save_rest_train_file, encoding='utf=8', mode='w') as tar_file:
             idx = 0
             for line in src_file:
                 tar_file.write(line.strip())
@@ -91,19 +88,19 @@ def pre_to_tsv(type):
 
 def count_max_length(index):
     max_length = 0
-    with open('dataset/laptops_test.tsv', mode='r') as file:
+    with open('dataset/lap_val.tsv', mode='r') as file:
         for line in file:
             sentence = line.strip().split('\t')[index]
             max_length = max(max_length, len(sentence.split()))
-    with open('dataset/laptops_train.tsv', mode='r') as file:
+    with open('dataset/lap_train.tsv', mode='r') as file:
         for line in file:
             sentence = line.strip().split('\t')[index]
             max_length = max(max_length, len(sentence.split()))
-    with open('dataset/restaurant_test.tsv', mode='r') as file:
+    with open('dataset/rest_val.tsv', mode='r') as file:
         for line in file:
             sentence = line.strip().split('\t')[index]
             max_length = max(max_length, len(sentence.split()))
-    with open('dataset/restaurant_train.tsv', mode='r') as file:
+    with open('dataset/rest_train.tsv', mode='r') as file:
         for line in file:
             sentence = line.strip().split('\t')[index]
             max_length = max(max_length, len(sentence.split()))
@@ -111,8 +108,75 @@ def count_max_length(index):
     print(max_length)
 
 
+def seg_to_tsv():
+    lap_file = 'dataset/lap_test.seg'
+    rest_file = 'dataset/rest_test.seg'
+
+    save_lap = 'dataset/lap_test.tsv'
+    save_rest = 'dataset/rest_test.tsv'
+
+    idx = 1
+    with open(save_lap, encoding='utf-8', mode='w') as lap:
+        with open(lap_file, encoding='utf-8', mode='r') as file:
+            for line in file:
+                lap.write(line.strip())
+                if idx % 3 is 0:
+                    lap.write('\n')
+                else:
+                    lap.write('\t')
+                idx += 1
+    idx = 1
+    with open(save_rest, encoding='utf-8', mode='w') as rest:
+        with open(rest_file, encoding='utf-8', mode='r') as file:
+            for line in file:
+                rest.write(line.strip())
+                if idx % 3 is 0:
+                    rest.write('\n')
+                else:
+                    rest.write('\t')
+                idx += 1
+
+    print('seg to tsv done!')
+
+
+def fill_aspect():
+    lap_file = 'dataset/lap_test_seg.tsv'
+    rest_file = 'dataset/rest_test_seg.tsv'
+
+    tar_lap = 'dataset/tar_lap.tsv'
+    tar_rest = 'dataset/tar_rest.tsv'
+
+    with open(tar_lap, encoding='utf-8', mode='w') as lap:
+        with open(lap_file, encoding='utf-8', mode='r') as file:
+            for line in file:
+                items = line.strip().split('\t')
+                items[0] = items[0].replace('$T$', items[1])
+                items[2] = str(int(items[2]) + 1)
+                for idx, item in enumerate(items):
+                    lap.write(item)
+                    if idx is not 2:
+                        lap.write('\t')
+                        continue
+                    lap.write('\n')
+    with open(tar_rest, encoding='utf-8', mode='w') as rest:
+        with open(rest_file, encoding='utf-8', mode='r') as file:
+            for line in file:
+                items = line.strip().split('\t')
+                items[0] = items[0].replace('$T$', items[1])
+                items[2] = str(int(items[2]) + 1)
+                for idx, item in enumerate(items):
+                    rest.write(item)
+                    if idx is not 2:
+                        rest.write('\t')
+                        continue
+                    rest.write('\n')
+
+    print('fill done!')
+
+
 if __name__ == '__main__':
-    xml_to_pre('train')
-    pre_to_tsv('train')
-    xml_to_pre('test')
-    pre_to_tsv('test')
+    # xml_to_pre('train')
+    # pre_to_tsv('train')
+    # xml_to_pre('test')
+    # pre_to_tsv('test')
+    fill_aspect()

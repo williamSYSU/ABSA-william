@@ -22,10 +22,10 @@ class ATAE_LSTM(nn.Module):
         self.lstm = nn.LSTM(2 * config.embed_size, config.hidden_size, batch_first=True)
         self.text_embed = nn.Embedding.from_pretrained(
             config.text_vocab.vectors,
-            freeze=True if config.if_embed_trainable else False)
+            freeze=False if config.if_embed_trainable else True)
         self.aspect_embed = nn.Embedding.from_pretrained(
             config.aspect_vocab.vectors,
-            freeze=True if config.if_embed_trainable else False)
+            freeze=False if config.if_embed_trainable else True)
         self.aspect_mean = AspectMean(config.max_sen_len)
         self.attention = Attention(
             config.train_batch_size, config.embed_size, config.hidden_size, config.uniform_rate)

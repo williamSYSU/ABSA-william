@@ -8,6 +8,7 @@
 # Copyrights (C) 2018. All Rights Reserved.
 
 import os
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -43,9 +44,9 @@ criterions = {
 """
 训练过程的可调参数
 """
-learning_rate = 0.001
+learning_rate = 0.01
 epoch_num = 100
-train_batch_size = 4
+train_batch_size = 25
 val_batch_size = 25
 test_batch_size = 25
 batch_size_tuple = (train_batch_size, val_batch_size, test_batch_size)
@@ -75,14 +76,17 @@ if_embed_trainable = 1  # 设置词向量是否可训练
 """
 数据集的可调参数
 """
-train_val_ratio = 0.7  # 训练集和测试集的比例
+train_val_ratio = 0.8  # 训练集和测试集的比例
 max_sen_len = 80  # 最大句子长度
 max_asp_len = 20  # 最大词向量长度
+train_file = 'train.tsv'
+val_file = 'lap_test.tsv'
+test_file = 'lap_test.tsv'
 """
 其它可调参数
 """
 log_dir = 'log'  # tensorboard路径
-log_step = 5  # 记录loss的步长
+log_step = 10  # 记录验证效果的步长
 
 # Automatically choose GPU or CPU
 if torch.cuda.is_available():
