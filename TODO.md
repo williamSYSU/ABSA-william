@@ -9,3 +9,4 @@
 6. 数据去停词
 7. 检查计算正确率的函数
 8. 修改损失函数，Pytorch的交叉熵函数包含了LogSoftmax的过程。
+> Pytorch的CrossEntropy损失函数自带有LogSoftmax过程，在模型的最后一层输出只需要用全连接层变换到相应的维度即可，不用做Softmax
