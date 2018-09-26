@@ -133,18 +133,11 @@ class Instructor:
         # 在测试集上测试并保存结果
         print('=' * 100)
         print('> Begin test model......')
+        ac_rate = self.cal_ac_rate(self.test_iter)
+        print('>>> Final accurate rate: ', ac_rate)
 
-        self.model.eval()
-        total_ac = 0
-        times = 10
-        for _ in range(times):
-            total_ac += self.cal_ac_rate(self.test_iter)
-
-        total_ac /= times
-        print('final accurate rate:', total_ac)
         if not config.pretrain:
-            self.save_model(restore_loss[-1], total_ac)
-        return total_ac
+            self.save_model(restore_loss[-1], ac_rate)
 
     # 保存预训练模型（保存参数）
     def save_model(self, loss, ac_rate):
