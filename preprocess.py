@@ -179,9 +179,9 @@ def fill_aspect():
 
 
 def split_train_val():
-    all_train = 'dataset/all_train.tsv'
-    train_file = 'dataset/train.tsv'
-    val_file = 'dataset/val.tsv'
+    all_train = 'dataset/all_train_2.tsv'
+    train_file = 'dataset/train_2.tsv'
+    val_file = 'dataset/val_2.tsv'
     all_lines = []
     with open(all_train, 'r') as file:
         for line in file:
@@ -200,9 +200,58 @@ def split_train_val():
             file.write(line)
 
 
+def get_two_type():
+    raw_train = 'dataset/all_train.tsv'
+    raw_lap_test = 'dataset/lap_test.tsv'
+    raw_rest_test = 'dataset/rest_test.tsv'
+
+    tar_train = 'dataset/all_train_2.tsv'
+    tar_lap_test = 'dataset/lap_test_2.tsv'
+    tar_rest_test = 'dataset/rest_test_2.tsv'
+
+    with open(tar_train, 'w') as target:
+        with open(raw_train, 'r') as file:
+            for line in file:
+                items = line.strip().split('\t')
+                if items[2] is '1':
+                    continue
+                elif items[2] is '2':
+                    items[2] = '1'
+                    line = '\t'.join(items)
+                    target.write(line + '\n')
+                else:
+                    target.write(line)
+    with open(tar_lap_test, 'w') as target:
+        with open(raw_lap_test, 'r') as file:
+            for line in file:
+                items = line.strip().split('\t')
+                if items[2] is '1':
+                    continue
+                elif items[2] is '2':
+                    items[2] = '1'
+                    line = '\t'.join(items)
+                    target.write(line + '\n')
+                else:
+                    target.write(line)
+    with open(tar_rest_test, 'w') as target:
+        with open(raw_rest_test, 'r') as file:
+            for line in file:
+                items = line.strip().split('\t')
+                if items[2] is '1':
+                    continue
+                elif items[2] is '2':
+                    items[2] = '1'
+                    line = '\t'.join(items)
+                    target.write(line + '\n')
+                else:
+                    target.write(line)
+
+    print('done!')
+
 if __name__ == '__main__':
     # xml_to_pre('train')
     # pre_to_tsv('train')
     # xml_to_pre('test')
     # pre_to_tsv('test')
     split_train_val()
+    # get_two_type()

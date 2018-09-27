@@ -8,9 +8,28 @@
 # Copyrights (C) 2018. All Rights Reserved.
 
 import argparse
+import time
+
+import os
 
 import config
 from train import Instructor
+
+
+def create_path():
+    print('=' * 100)
+    current = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+    path = os.path.join('pretrained_model', '{}_{}_lr{}_ep{}').format(
+        current, config.model_name, config.learning_rate, config.epoch_num)
+    folder = os.path.exists(path)
+    if not folder:
+        os.makedirs(path)
+        print('> New folder:', path)
+    else:
+        print('> Folder {} already exists!'.format(path))
+
+    return path
+
 
 if __name__ == '__main__':
     # 可调超参
@@ -82,10 +101,20 @@ if __name__ == '__main__':
         print('>>> {}: {}'.format(arg, getattr(opt, arg)))
 
     # 准备训练模型数据
+
     instructor = Instructor()
 
     # 开始训练模型
-    instructor.begin_train()
+    pre_path = create_path()
+    if not config.pretrain:
+        for i in range(config.save_model_num):
+            print('>>> Current times:', i)
+            instructor.__init__(pre_path)
+            instructor.begin_train()
+            instructor.test_model()
+        instructor.load_model_and_test(pre_path)
+    else:
+        instructor.begin_train()
 
     # 测试模型
-    instructor.test_model()
+    # instructor.test_model()

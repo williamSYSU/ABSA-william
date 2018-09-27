@@ -19,6 +19,8 @@ from layers.attention import Attention
 class ATAE_LSTM(nn.Module):
     def __init__(self):
         super(ATAE_LSTM, self).__init__()
+        self.uniform_rate = config.uniform_rate
+
         self.lstm = nn.LSTM(2 * config.embed_size, config.hidden_size, batch_first=True)
         self.text_embed = nn.Embedding.from_pretrained(
             config.text_vocab.vectors,
@@ -27,15 +29,16 @@ class ATAE_LSTM(nn.Module):
             config.aspect_vocab.vectors,
             freeze=False if config.if_embed_trainable else True)
         self.aspect_mean = AspectMean(config.max_sen_len)
-        self.attention = Attention(
-            config.train_batch_size, config.embed_size, config.hidden_size, config.uniform_rate)
+        self.attention = Attention(config.hidden_size, config.uniform_rate)
 
         self.proj1 = nn.Linear(config.hidden_size, config.hidden_size, bias=False)
         self.proj2 = nn.Linear(config.hidden_size, config.hidden_size, bias=False)
         self.fc = nn.Linear(config.hidden_size, config.target_size)
         self.tanh = nn.Tanh()
-        self.dropout = nn.Dropout(config.dropout_rate)
         self.softmax = nn.Softmax(dim=1)
+
+        # reset parameters
+        self.reset_param()
 
     def forward(self, text, aspect):
         """
@@ -64,4 +67,11 @@ class ATAE_LSTM(nn.Module):
         h_out = self.tanh(r_out + hn_out)
         out = self.fc(h_out)
         # out = self.softmax(self.fc(h_out))
-        return out
+        return out, weight, at_out
+
+    def reset_param(self):
+        self.proj1.weight.data.uniform_(-self.uniform_rate, self.uniform_rate)
+        self.proj2.weight.data.uniform_(-self.uniform_rate, self.uniform_rate)
+        self.fc.weight.data.uniform_(-self.uniform_rate, self.uniform_rate)
+        for para in self.lstm._parameters.values():
+            para.data.uniform_(-self.uniform_rate, self.uniform_rate)

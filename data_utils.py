@@ -21,11 +21,10 @@ class ABSAData:
     def __init__(self):
         TEXT = data.Field(
             sequential=True, lower=True, batch_first=True,
-            tokenize=self.tokenizer, preprocessing=self.clean_symbol,
-            fix_length=config.max_sen_len
+            tokenize=self.tokenizer, fix_length=config.max_sen_len
         )
         ASPECT = data.Field(
-            sequential=True, lower=True, batch_first=True, preprocessing=self.clean_symbol,
+            sequential=True, lower=True, batch_first=True,
             fix_length=config.max_asp_len
         )
         LABEL = data.Field(
@@ -34,9 +33,9 @@ class ABSAData:
 
         # Get data from .tsv file
         # TODO: 去停词处理
-        train,val, test = data.TabularDataset.splits(
+        train_and_val, test = data.TabularDataset.splits(
             path='dataset/', format='tsv',
-            train=config.train_file, validation=config.val_file, test=config.test_file,
+            train=config.train_file, test=config.test_file,
             fields=[
                 ('Text', TEXT),
                 ('Aspect', ASPECT),
@@ -45,9 +44,9 @@ class ABSAData:
         )
 
         # Split data into train set and validation set
-        # train, val = train_and_val.split(
-        #     split_ratio=config.train_val_ratio
-        # )
+        train, val = train_and_val.split(
+            split_ratio=config.train_val_ratio
+        )
 
         # Build vocab for Field TEXT, ASPECT and LABEL
         TEXT.build_vocab(train, val, test, vectors='glove.840B.300d', unk_init=self.unk_init_uniform)

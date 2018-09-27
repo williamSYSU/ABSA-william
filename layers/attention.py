@@ -19,16 +19,17 @@ class Attention(nn.Module):
                 Proc. 2016 Conf. Empir. Methods Nat. Lang. Process., pp. 606–615, 2016.
     """
 
-    def __init__(self, batch_size, embed_size, hidden_size, uniform_rate):
+    def __init__(self, hidden_size, uniform_rate):
         super(Attention, self).__init__()
         self.uniform_rate = uniform_rate
+
         self.w_text = nn.Linear(hidden_size, hidden_size, bias=False)
         self.w_aspect = nn.Linear(hidden_size, hidden_size, bias=False)
         self.w_combine = nn.Linear(2 * hidden_size, 1, bias=False)
         self.tanh = nn.Tanh()
         self.softmax = nn.Softmax(dim=1)
 
-        # self.reset_parameters()
+        self.reset_parameters()
 
     def forward(self, text, aspect):
         """
