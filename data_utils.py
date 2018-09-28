@@ -21,10 +21,12 @@ class ABSAData:
     def __init__(self):
         TEXT = data.Field(
             sequential=True, lower=True, batch_first=True,
+            preprocessing=self.clean_symbol if config.if_clean_symbol else None,
             tokenize=self.tokenizer, fix_length=config.max_sen_len
         )
         ASPECT = data.Field(
             sequential=True, lower=True, batch_first=True,
+            preprocessing=self.clean_symbol if config.if_clean_symbol else None,
             fix_length=config.max_asp_len
         )
         LABEL = data.Field(

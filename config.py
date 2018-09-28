@@ -56,7 +56,7 @@ criterion = criterions[loss_name]
 
 if_step_verify = 1  # 是否在训练中验证
 early_stop = 0.0001  # 早停策略的阈值，loss低于这个阈值则停止训练
-lr_decay = 0  # lr_decay in nn.Adagrad
+lr_decay = 0.001  # lr_decay in nn.Adagrad
 shuffle = 1  # 是否打乱每一轮的batch
 pretrain = 0  # 设置是否使用预训练模型
 model_filename = ''
@@ -76,15 +76,16 @@ if_embed_trainable = 1  # 设置词向量是否可训练
 train_val_ratio = 0.8  # 训练集和测试集的比例
 max_sen_len = 80  # 最大句子长度
 max_asp_len = 20  # 最大词向量长度
-train_file = 'lap_train.tsv'
+train_file = 'rest_train.tsv'
 # val_file = 'val_2.tsv'
 test_file = 'rest_test.tsv'
+if_clean_symbol = 1
 
 '''其它可调参数'''
 if_log = 0  # 是否使用tensorboard记录
 log_dir = 'log'  # tensorboard路径
 log_step = 10  # 记录验证效果的步长
-save_model_num = 5  # 一共保存几个预训练模型
+save_model_num = 3  # 一共保存几个预训练模型
 
 '''Automatically choose GPU or CPU'''
 if torch.cuda.is_available():
