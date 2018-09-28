@@ -105,7 +105,8 @@ class Instructor:
                     ac_rate = self.cal_ac_rate(self.val_iter)
                     if config.if_log:
                         self.writer.add_scalar('Accurate_rate', ac_rate, global_step)
-                    max_ac_rate = max(max_ac_rate, ac_rate)
+                    if epoch > 3:
+                        max_ac_rate = max(max_ac_rate, ac_rate)
 
                     # 保存验证集准确率最高的模型
                     if not config.pretrain:

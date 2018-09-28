@@ -76,14 +76,14 @@ if_embed_trainable = 1  # 设置词向量是否可训练
 train_val_ratio = 0.8  # 训练集和测试集的比例
 max_sen_len = 80  # 最大句子长度
 max_asp_len = 20  # 最大词向量长度
-train_file = 'all_train.tsv'
+train_file = 'lap_train.tsv'
 # val_file = 'val_2.tsv'
-test_file = 'lap_test.tsv'
+test_file = 'rest_test.tsv'
 
 '''其它可调参数'''
 if_log = 0  # 是否使用tensorboard记录
 log_dir = 'log'  # tensorboard路径
-log_step = 5  # 记录验证效果的步长
+log_step = 10  # 记录验证效果的步长
 save_model_num = 5  # 一共保存几个预训练模型
 
 '''Automatically choose GPU or CPU'''

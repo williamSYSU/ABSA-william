@@ -122,74 +122,75 @@ if __name__ == '__main__':
     program_run_param = [
         # three categoried model
         ['all_train.tsv', 'all_test.tsv', 3, 0],
-        ['all_train.tsv', 'all_test.tsv', 3, 0.001],
-        ['all_train.tsv', 'all_test.tsv', 3, 0.0001],
-        ['all_train.tsv', 'all_test.tsv', 3, 0.00001],
+        # ['all_train.tsv', 'all_test.tsv', 3, 0.001],
+        # ['all_train.tsv', 'all_test.tsv', 3, 0.0001],
+        # ['all_train.tsv', 'all_test.tsv', 3, 0.00001],
 
         ['all_train.tsv', 'lap_test.tsv', 3, 0],
-        ['all_train.tsv', 'lap_test.tsv', 3, 0.001],
-        ['all_train.tsv', 'lap_test.tsv', 3, 0.0001],
-        ['all_train.tsv', 'lap_test.tsv', 3, 0.00001],
+        # ['all_train.tsv', 'lap_test.tsv', 3, 0.001],
+        # ['all_train.tsv', 'lap_test.tsv', 3, 0.0001],
+        # ['all_train.tsv', 'lap_test.tsv', 3, 0.00001],
 
         ['all_train.tsv', 'rest_test.tsv', 3, 0],
-        ['all_train.tsv', 'rest_test.tsv', 3, 0.001],
-        ['all_train.tsv', 'rest_test.tsv', 3, 0.0001],
-        ['all_train.tsv', 'rest_test.tsv', 3, 0.00001],
+        # ['all_train.tsv', 'rest_test.tsv', 3, 0.001],
+        # ['all_train.tsv', 'rest_test.tsv', 3, 0.0001],
+        # ['all_train.tsv', 'rest_test.tsv', 3, 0.00001],
 
         ['lap_train.tsv', 'lap_test.tsv', 3, 0],
-        ['lap_train.tsv', 'lap_test.tsv', 3, 0.001],
-        ['lap_train.tsv', 'lap_test.tsv', 3, 0.0001],
-        ['lap_train.tsv', 'lap_test.tsv', 3, 0.00001],
+        # ['lap_train.tsv', 'lap_test.tsv', 3, 0.001],
+        # ['lap_train.tsv', 'lap_test.tsv', 3, 0.0001],
+        # ['lap_train.tsv', 'lap_test.tsv', 3, 0.00001],
 
         ['rest_train.tsv', 'rest_test.tsv', 3, 0],
-        ['rest_train.tsv', 'rest_test.tsv', 3, 0.001],
-        ['rest_train.tsv', 'rest_test.tsv', 3, 0.0001],
-        ['rest_train.tsv', 'rest_test.tsv', 3, 0.00001],
+        # ['rest_train.tsv', 'rest_test.tsv', 3, 0.001],
+        # ['rest_train.tsv', 'rest_test.tsv', 3, 0.0001],
+        # ['rest_train.tsv', 'rest_test.tsv', 3, 0.00001],
 
         # two categories model
         ['all_train_2.tsv', 'all_test_2.tsv', 2, 0],
-        ['all_train_2.tsv', 'all_test_2.tsv', 2, 0.001],
-        ['all_train_2.tsv', 'all_test_2.tsv', 2, 0.0001],
-        ['all_train_2.tsv', 'all_test_2.tsv', 2, 0.00001],
+        # ['all_train_2.tsv', 'all_test_2.tsv', 2, 0.001],
+        # ['all_train_2.tsv', 'all_test_2.tsv', 2, 0.0001],
+        # ['all_train_2.tsv', 'all_test_2.tsv', 2, 0.00001],
 
         ['all_train_2.tsv', 'lap_test_2.tsv', 2, 0],
-        ['all_train_2.tsv', 'lap_test_2.tsv', 2, 0.001],
-        ['all_train_2.tsv', 'lap_test_2.tsv', 2, 0.0001],
-        ['all_train_2.tsv', 'lap_test_2.tsv', 2, 0.00001],
+        # ['all_train_2.tsv', 'lap_test_2.tsv', 2, 0.001],
+        # ['all_train_2.tsv', 'lap_test_2.tsv', 2, 0.0001],
+        # ['all_train_2.tsv', 'lap_test_2.tsv', 2, 0.00001],
 
         ['all_train_2.tsv', 'rest_test_2.tsv', 2, 0],
-        ['all_train_2.tsv', 'rest_test_2.tsv', 2, 0.001],
-        ['all_train_2.tsv', 'rest_test_2.tsv', 2, 0.0001],
-        ['all_train_2.tsv', 'rest_test_2.tsv', 2, 0.00001],
+        # ['all_train_2.tsv', 'rest_test_2.tsv', 2, 0.001],
+        # ['all_train_2.tsv', 'rest_test_2.tsv', 2, 0.0001],
+        # ['all_train_2.tsv', 'rest_test_2.tsv', 2, 0.00001],
 
         ['lap_train_2.tsv', 'lap_test_2.tsv', 2, 0],
-        ['lap_train_2.tsv', 'lap_test_2.tsv', 2, 0.001],
-        ['lap_train_2.tsv', 'lap_test_2.tsv', 2, 0.0001],
-        ['lap_train_2.tsv', 'lap_test_2.tsv', 2, 0.00001],
+        # ['lap_train_2.tsv', 'lap_test_2.tsv', 2, 0.001],
+        # ['lap_train_2.tsv', 'lap_test_2.tsv', 2, 0.0001],
+        # ['lap_train_2.tsv', 'lap_test_2.tsv', 2, 0.00001],
 
         ['rest_train_2.tsv', 'rest_test_2.tsv', 2, 0],
-        ['rest_train_2.tsv', 'rest_test_2.tsv', 2, 0.001],
-        ['rest_train_2.tsv', 'rest_test_2.tsv', 2, 0.0001],
-        ['rest_train_2.tsv', 'rest_test_2.tsv', 2, 0.00001],
+        # ['rest_train_2.tsv', 'rest_test_2.tsv', 2, 0.001],
+        # ['rest_train_2.tsv', 'rest_test_2.tsv', 2, 0.0001],
+        # ['rest_train_2.tsv', 'rest_test_2.tsv', 2, 0.00001],
     ]
 
-    for param in program_run_param:
-        print('=' * 100)
-        print('>>> Current program param: {}'.format(param))
+    # for param in program_run_param:
+    #     print('=' * 100)
+    #     print('>>> Current program param: {}'.format(param))
 
-        init_program(param)
-        pre_dir = create_path()
-        if not config.pretrain:
-            for i in range(config.save_model_num):
-                print('=' * 100)
-                print('>>> Current run times {} of {}'.format(i, config.save_model_num))
-                instructor = Instructor(pre_dir)
-                instructor.begin_train()
-                instructor.test_model()
-            avg_ac = instructor.load_model_and_test(pre_dir)
-            os.rename(pre_dir, pre_dir + '_{:6f}'.format(avg_ac))
-        else:
+        # init_program(param)
+    pre_dir = create_path()
+    if not config.pretrain:
+        for i in range(config.save_model_num):
+            print('=' * 100)
+            print('>>> Current run times {} of {}'.format(i + 1, config.save_model_num))
+            instructor = Instructor(pre_dir)
             instructor.begin_train()
+            instructor.test_model()
+        avg_ac = instructor.load_model_and_test(pre_dir)
+        os.rename(pre_dir, pre_dir + '_{:6f}'.format(avg_ac))
+    else:
+        instructor = Instructor(pre_dir)
+        instructor.begin_train()
 
         '''测试模型'''
         # instructor.test_model()
