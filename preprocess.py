@@ -92,19 +92,11 @@ def pre_to_tsv(type):
 
 def count_max_length(index):
     max_length = 0
-    with open('dataset/lap_val.tsv', mode='r') as file:
+    with open('dataset/all_test.tsv', mode='r') as file:
         for line in file:
             sentence = line.strip().split('\t')[index]
             max_length = max(max_length, len(sentence.split()))
-    with open('dataset/lap_train.tsv', mode='r') as file:
-        for line in file:
-            sentence = line.strip().split('\t')[index]
-            max_length = max(max_length, len(sentence.split()))
-    with open('dataset/rest_val.tsv', mode='r') as file:
-        for line in file:
-            sentence = line.strip().split('\t')[index]
-            max_length = max(max_length, len(sentence.split()))
-    with open('dataset/rest_train.tsv', mode='r') as file:
+    with open('dataset/all_train.tsv', mode='r') as file:
         for line in file:
             sentence = line.strip().split('\t')[index]
             max_length = max(max_length, len(sentence.split()))
@@ -200,41 +192,14 @@ def split_train_val():
             file.write(line)
 
 
-def get_two_type():
-    raw_train = 'dataset/all_train.tsv'
-    raw_lap_test = 'dataset/lap_test.tsv'
-    raw_rest_test = 'dataset/rest_test.tsv'
-
-    tar_train = 'dataset/all_train_2.tsv'
-    tar_lap_test = 'dataset/lap_test_2.tsv'
-    tar_rest_test = 'dataset/rest_test_2.tsv'
-
-    with open(tar_train, 'w') as target:
-        with open(raw_train, 'r') as file:
-            for line in file:
-                items = line.strip().split('\t')
-                if items[2] is '1':
-                    continue
-                elif items[2] is '2':
-                    items[2] = '1'
-                    line = '\t'.join(items)
-                    target.write(line + '\n')
-                else:
-                    target.write(line)
-    with open(tar_lap_test, 'w') as target:
-        with open(raw_lap_test, 'r') as file:
-            for line in file:
-                items = line.strip().split('\t')
-                if items[2] is '1':
-                    continue
-                elif items[2] is '2':
-                    items[2] = '1'
-                    line = '\t'.join(items)
-                    target.write(line + '\n')
-                else:
-                    target.write(line)
-    with open(tar_rest_test, 'w') as target:
-        with open(raw_rest_test, 'r') as file:
+def get_two_type(raw_file, tar_file):
+    """
+    extract two categories from raw file
+    :param raw_file: original file
+    :param tar_file: target file
+    """
+    with open(tar_file, 'w') as target:
+        with open(raw_file, 'r') as file:
             for line in file:
                 items = line.strip().split('\t')
                 if items[2] is '1':
@@ -248,10 +213,23 @@ def get_two_type():
 
     print('done!')
 
+
 if __name__ == '__main__':
     # xml_to_pre('train')
     # pre_to_tsv('train')
     # xml_to_pre('test')
     # pre_to_tsv('test')
-    split_train_val()
+    # split_train_val()
     # get_two_type()
+    # count_max_length(0)
+    three_to_two = [
+        ['dataset/all_train.tsv', 'dataset/all_train_2.tsv'],
+        ['dataset/all_test.tsv', 'dataset/all_test_2.tsv'],
+        ['dataset/lap_train.tsv', 'dataset/lap_train_2.tsv'],
+        ['dataset/rest_train.tsv', 'dataset/rest_train_2.tsv'],
+        ['dataset/lap_test.tsv', 'dataset/lap_test_2.tsv'],
+        ['dataset/rest_test.tsv', 'dataset/rest_test_2.tsv'],
+    ]
+    for files in three_to_two:
+        get_two_type(files[0], files[1])
+    pass

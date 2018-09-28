@@ -4,7 +4,7 @@
 # @FileName     : aspect_sum.py
 # @Time         : Created at 2018/9/20
 # @Blog         : http://zhiweil.ml/
-# @Description  : 对几个Aspect词向量求均值
+# @Description  : Averaging the aspect embedding
 # Copyrights (C) 2018. All Rights Reserved.
 
 import torch
@@ -12,10 +12,6 @@ import torch.nn as nn
 
 
 class AspectMean(nn.Module):
-    """
-    Get aspect mean embedding.
-    """
-
     def __init__(self, max_sen_len):
         """
         :param max_sen_len: maximum length of sentence

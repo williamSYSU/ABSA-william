@@ -49,7 +49,8 @@ class Instructor:
             lr=config.learning_rate,
             lr_decay=config.lr_decay,
             weight_decay=0.001)
-        self.writer = SummaryWriter(log_dir=config.log_dir)
+        if config.if_log:
+            self.writer = SummaryWriter(log_dir=config.log_dir)
 
         # Create pretrained model folder
         if not config.pretrain:
@@ -102,7 +103,8 @@ class Instructor:
                 # 查看模型在验证集上的验证效果
                 if config.if_step_verify and global_step % config.log_step is 0:
                     ac_rate = self.cal_ac_rate(self.val_iter)
-                    # self.writer.add_scalar('Accurate_rate', ac_rate, global_step)
+                    if config.if_log:
+                        self.writer.add_scalar('Accurate_rate', ac_rate, global_step)
                     max_ac_rate = max(max_ac_rate, ac_rate)
 
                     # 保存验证集准确率最高的模型
@@ -121,7 +123,8 @@ class Instructor:
 
             min_loss = min(min_loss, loss.item())  # 计算训练过程的最小Loss
             restore_loss.append(loss.item())  # 保存每轮loss
-            # self.writer.add_scalar('Train_Loss', loss, epoch)  # 画loss曲线
+            if config.if_log:
+                self.writer.add_scalar('Train_Loss', loss, epoch)  # 画loss曲线
 
             # "早停"策略，loss低于设定值时，停止训练
             if loss.item() <= config.early_stop:
@@ -129,7 +132,8 @@ class Instructor:
                 print('> Current loss: {}, threshold loss: {}'.format(loss.item(), config.early_stop))
                 break
 
-        self.writer.close()
+        if config.if_log:
+            self.writer.close()
 
     def cal_ac_rate(self, data_iter):
         self.model.eval()  # 设置模型为验证模式

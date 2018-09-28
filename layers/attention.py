@@ -10,16 +10,18 @@
 import torch
 import torch.nn as nn
 
-
+"""
+Attention Mechanism applied for ATAE-LSTM
+Reference: Y. Wang, M. Huang, L. Zhao, and X. Zhu,
+            "Attention-based LSTM for Aspect-level Sentiment Classification,"
+            Proc. 2016 Conf. Empir. Methods Nat. Lang. Process., pp. 606–615, 2016.
+"""
 class Attention(nn.Module):
-    """
-    Attention Mechanism applied for ATAE-LSTM
-    Reference: Y. Wang, M. Huang, L. Zhao, and X. Zhu,
-                "Attention-based LSTM for Aspect-level Sentiment Classification,"
-                Proc. 2016 Conf. Empir. Methods Nat. Lang. Process., pp. 606–615, 2016.
-    """
-
     def __init__(self, hidden_size, uniform_rate):
+        """
+        :param hidden_size: hidden size
+        :param uniform_rate: variable for uniform distribution
+        """
         super(Attention, self).__init__()
         self.uniform_rate = uniform_rate
 

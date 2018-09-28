@@ -4,7 +4,7 @@
 # @FileName     : lstm.py
 # @Time         : Created at 2018/9/20
 # @Blog         : http://zhiweil.ml/
-# @Description  : LSTM Model
+# @Description  : ATAT-LSTM implementation
 # Copyrights (C) 2018. All Rights Reserved.
 
 import torch
@@ -14,8 +14,14 @@ import config
 from layers.aspect_mean import AspectMean
 from layers.attention import Attention
 
+"""
+Attention-based LSTM with Aspect Embedding (ATAE-LSTM) implementation
+Reference: Y. Wang, M. Huang, L. Zhao, and X. Zhu,
+            "Attention-based LSTM for Aspect-level Sentiment Classification,"
+            Proc. 2016 Conf. Empir. Methods Nat. Lang. Process., pp. 606–615, 2016.
+"""
 
-# Attentioned-based LSTM with Aspect Embedding (ATAE-LSTM)
+
 class ATAE_LSTM(nn.Module):
     def __init__(self):
         super(ATAE_LSTM, self).__init__()
@@ -35,7 +41,7 @@ class ATAE_LSTM(nn.Module):
         self.proj2 = nn.Linear(config.hidden_size, config.hidden_size, bias=False)
         self.fc = nn.Linear(config.hidden_size, config.target_size)
         self.tanh = nn.Tanh()
-        self.softmax = nn.Softmax(dim=1)
+        self.so1ftmax = nn.Softmax(dim=1)
 
         # reset parameters
         self.reset_param()
@@ -47,31 +53,30 @@ class ATAE_LSTM(nn.Module):
         :param aspect: size: [batch_size, max_asp_len]
         :return: out: size: [batch_size, target_size]
         """
-        # 处理text
+        '''get embedding'''
         text_out = self.text_embed(text)
-
-        # 处理aspect，aspect做均值处理
         aspect_out = self.aspect_embed(aspect)
-        aspect_out = self.aspect_mean(aspect_out)
 
-        # 拼接text和aspect
-        combine = torch.cat((text_out, aspect_out), dim=2)
+        '''averaging aspect embedding'''
+        aspect_mean = self.aspect_mean(aspect_out)
 
-        # lstm > attention
+        '''cat text and aspect embedding'''
+        combine = torch.cat((text_out, aspect_mean), dim=2)
+
+        '''LSTM -> Attention -> weight, at_out'''
         lstm_out, _ = self.lstm(combine)
-        weight, at_out = self.attention(lstm_out, aspect_out)
+        weight, at_out = self.attention(lstm_out, aspect_mean)
 
-        # projection
+        '''projection'''
         r_out = self.proj1(at_out.squeeze(dim=1))
         hn_out = self.proj2(lstm_out[:, config.max_sen_len - 1, :].squeeze(dim=1))
         h_out = self.tanh(r_out + hn_out)
         out = self.fc(h_out)
-        # out = self.softmax(self.fc(h_out))
         return out, weight, at_out
 
     def reset_param(self):
         self.proj1.weight.data.uniform_(-self.uniform_rate, self.uniform_rate)
         self.proj2.weight.data.uniform_(-self.uniform_rate, self.uniform_rate)
         self.fc.weight.data.uniform_(-self.uniform_rate, self.uniform_rate)
-        for para in self.lstm._parameters.values():
-            para.data.uniform_(-self.uniform_rate, self.uniform_rate)
+        for param in self.lstm._parameters.values():
+            param.data.uniform_(-self.uniform_rate, self.uniform_rate)

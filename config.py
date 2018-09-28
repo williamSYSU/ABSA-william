@@ -8,7 +8,6 @@
 # Copyrights (C) 2018. All Rights Reserved.
 
 import os
-
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -16,13 +15,13 @@ import torch.optim as optim
 from models.atae_lstm import ATAE_LSTM
 from models.bi_lstm import Bi_LSTM
 
-# 模型种类
+'''模型种类'''
 model_classes = {
     'bi_lstm': Bi_LSTM,
     'atae_lstm': ATAE_LSTM,
 }
 
-# 优化器种类
+'''优化器种类'''
 optimizers = {
     'adadelta': optim.Adadelta,
     'adagrad': optim.Adagrad,
@@ -32,7 +31,7 @@ optimizers = {
     'sgd': optim.SGD
 }
 
-# 损失函数种类
+'''损失函数种类'''
 criterions = {
     'bce': nn.BCELoss,
     'mse': nn.MSELoss,
@@ -41,9 +40,7 @@ criterions = {
     'cos_embed': nn.CosineEmbeddingLoss
 }
 
-"""
-训练过程的可调参数
-"""
+'''训练过程的可调参数'''
 learning_rate = 0.01
 epoch_num = 10
 train_batch_size = 25
@@ -59,40 +56,37 @@ criterion = criterions[loss_name]
 
 if_step_verify = 1  # 是否在训练中验证
 early_stop = 0.0001  # 早停策略的阈值，loss低于这个阈值则停止训练
-lr_decay = 0.001   # lr_decay in nn.Adagrad
+lr_decay = 0  # lr_decay in nn.Adagrad
 shuffle = 1  # 是否打乱每一轮的batch
 pretrain = 0  # 设置是否使用预训练模型
-model_filename = '2018-09-26 23:47:20_atae_lstm_lr0.01_ep15/2018-09-27 00:00:32.pkl'
+model_filename = ''
 pretrain_path = os.path.join('pretrained_model', model_filename)  # 设置预训练模型路径
-
 model_list_path = os.path.join('pretrained_model', '')
-"""
-模型结构的可调参数
-"""
+
+'''模型结构的可调参数'''
 embed_size = 300
 hidden_size = 300
-target_size = 2
+target_size = 3
 dropout_rate = 0.3
 uniform_rate = 0.01
 
 if_embed_trainable = 1  # 设置词向量是否可训练
-"""
-数据集的可调参数
-"""
+
+'''数据集的可调参数'''
 train_val_ratio = 0.8  # 训练集和测试集的比例
 max_sen_len = 80  # 最大句子长度
 max_asp_len = 20  # 最大词向量长度
-train_file = 'all_train_2.tsv'
+train_file = 'all_train.tsv'
 # val_file = 'val_2.tsv'
-test_file = 'lap_test_2.tsv'
-"""
-其它可调参数
-"""
-log_dir = 'log'  # tensorboard路径
-log_step = 10  # 记录验证效果的步长
-save_model_num = 3   # 一共保存几个预训练模型
+test_file = 'lap_test.tsv'
 
-# Automatically choose GPU or CPU
+'''其它可调参数'''
+if_log = 0  # 是否使用tensorboard记录
+log_dir = 'log'  # tensorboard路径
+log_step = 5  # 记录验证效果的步长
+save_model_num = 5  # 一共保存几个预训练模型
+
+'''Automatically choose GPU or CPU'''
 if torch.cuda.is_available():
     os.system('nvidia-smi -q -d Utilization | grep Gpu > log/gpu')
     util_gpu = [int(line.strip().split()[2]) for line in open('log/gpu', 'r')]
