@@ -19,9 +19,9 @@ from train import Instructor
 def create_path():
     print('=' * 100)
     current = time.strftime('%m-%d %H:%M', time.localtime())
-    path = os.path.join('pretrained_model', '{}_{}_lr{}_lrde{}_b{}_{}_{}').format(
+    path = os.path.join('pretrained_model', '{}_{}_lr{}_lrde{}_b{}_d{}_{}_{}').format(
         current, 'clean' if config.if_clean_symbol else 'symb',
-        config.learning_rate, config.lr_decay, config.train_batch_size,
+        config.learning_rate, config.lr_decay, config.train_batch_size, config.dropout_rate,
         config.train_file.split('.')[0], config.test_file.split('_')[0])
     folder = os.path.exists(path)
     if not folder:

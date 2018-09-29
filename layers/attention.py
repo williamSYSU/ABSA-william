@@ -10,6 +10,8 @@
 import torch
 import torch.nn as nn
 
+import config
+
 """
 Attention Mechanism applied for ATAE-LSTM
 Reference: Y. Wang, M. Huang, L. Zhao, and X. Zhu,
@@ -17,17 +19,13 @@ Reference: Y. Wang, M. Huang, L. Zhao, and X. Zhu,
             Proc. 2016 Conf. Empir. Methods Nat. Lang. Process., pp. 606–615, 2016.
 """
 class Attention(nn.Module):
-    def __init__(self, hidden_size, uniform_rate):
-        """
-        :param hidden_size: hidden size
-        :param uniform_rate: variable for uniform distribution
-        """
+    def __init__(self):
         super(Attention, self).__init__()
-        self.uniform_rate = uniform_rate
 
-        self.w_text = nn.Linear(hidden_size, hidden_size, bias=False)
-        self.w_aspect = nn.Linear(hidden_size, hidden_size, bias=False)
-        self.w_combine = nn.Linear(2 * hidden_size, 1, bias=False)
+        self.w_text = nn.Linear(config.hidden_size, config.hidden_size, bias=False)
+        self.w_aspect = nn.Linear(config.hidden_size, config.hidden_size, bias=False)
+        self.w_combine = nn.Linear(2 * config.hidden_size, 1, bias=False)
+        self.dropout = nn.Dropout(config.dropout_rate)
         self.tanh = nn.Tanh()
         self.softmax = nn.Softmax(dim=1)
 
@@ -46,12 +44,13 @@ class Attention(nn.Module):
         m_aspect = self.w_text(aspect)
 
         commbine = self.tanh(torch.cat((m_text, m_aspect), dim=2))
-        weight = self.w_combine(commbine)
-        weight = self.softmax(weight).permute(0, 2, 1)
+        combine_out = self.w_combine(commbine)
+        combine_out = self.dropout(combine_out)
+        weight = self.softmax(combine_out).permute(0, 2, 1)
         out = torch.bmm(weight, text)
         return weight, out
 
     def reset_parameters(self):
-        self.w_text.weight.data.uniform_(-self.uniform_rate, self.uniform_rate)
-        self.w_aspect.weight.data.uniform_(-self.uniform_rate, self.uniform_rate)
-        self.w_combine.weight.data.uniform_(-self.uniform_rate, self.uniform_rate)
+        self.w_text.weight.data.uniform_(-config.uniform_rate, config.uniform_rate)
+        self.w_aspect.weight.data.uniform_(-config.uniform_rate, config.uniform_rate)
+        self.w_combine.weight.data.uniform_(-config.uniform_rate, config.uniform_rate)

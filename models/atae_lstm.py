@@ -35,11 +35,12 @@ class ATAE_LSTM(nn.Module):
             config.aspect_vocab.vectors,
             freeze=False if config.if_embed_trainable else True)
         self.aspect_mean = AspectMean(config.max_sen_len)
-        self.attention = Attention(config.hidden_size, config.uniform_rate)
+        self.attention = Attention()
 
         self.proj1 = nn.Linear(config.hidden_size, config.hidden_size, bias=False)
         self.proj2 = nn.Linear(config.hidden_size, config.hidden_size, bias=False)
         self.fc = nn.Linear(config.hidden_size, config.target_size)
+        self.dropout = nn.Dropout(config.dropout_rate)
         self.tanh = nn.Tanh()
         self.so1ftmax = nn.Softmax(dim=1)
 
@@ -71,7 +72,8 @@ class ATAE_LSTM(nn.Module):
         r_out = self.proj1(at_out.squeeze(dim=1))
         hn_out = self.proj2(lstm_out[:, config.max_sen_len - 1, :].squeeze(dim=1))
         h_out = self.tanh(r_out + hn_out)
-        out = self.fc(h_out)
+        out = self.dropout(h_out)
+        out = self.fc(out)
         return out, weight, at_out
 
     def reset_param(self):

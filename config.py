@@ -14,11 +14,13 @@ import torch.optim as optim
 
 from models.atae_lstm import ATAE_LSTM
 from models.bi_lstm import Bi_LSTM
+from models.td_lstm import TD_LSTM
 
 '''模型种类'''
 model_classes = {
     'bi_lstm': Bi_LSTM,
     'atae_lstm': ATAE_LSTM,
+    'td_lstm': TD_LSTM,
 }
 
 '''优化器种类'''
@@ -42,7 +44,7 @@ criterions = {
 
 '''训练过程的可调参数'''
 learning_rate = 0.01
-epoch_num = 10
+epoch_num = 15
 train_batch_size = 25
 val_batch_size = 25
 test_batch_size = 25
@@ -56,7 +58,7 @@ criterion = criterions[loss_name]
 
 if_step_verify = 1  # 是否在训练中验证
 early_stop = 0.0001  # 早停策略的阈值，loss低于这个阈值则停止训练
-lr_decay = 0.001  # lr_decay in nn.Adagrad
+lr_decay = 0  # lr_decay in nn.Adagrad
 shuffle = 1  # 是否打乱每一轮的batch
 pretrain = 0  # 设置是否使用预训练模型
 model_filename = ''
@@ -67,7 +69,7 @@ model_list_path = os.path.join('pretrained_model', '')
 embed_size = 300
 hidden_size = 300
 target_size = 3
-dropout_rate = 0.3
+dropout_rate = 0
 uniform_rate = 0.01
 
 if_embed_trainable = 1  # 设置词向量是否可训练
@@ -76,7 +78,7 @@ if_embed_trainable = 1  # 设置词向量是否可训练
 train_val_ratio = 0.8  # 训练集和测试集的比例
 max_sen_len = 80  # 最大句子长度
 max_asp_len = 20  # 最大词向量长度
-train_file = 'rest_train.tsv'
+train_file = 'all_train.tsv'
 # val_file = 'val_2.tsv'
 test_file = 'rest_test.tsv'
 if_clean_symbol = 1

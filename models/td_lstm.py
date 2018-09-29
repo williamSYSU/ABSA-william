@@ -7,6 +7,7 @@
 # @Description  : TD-LSTM implementation
 # Copyrights (C) 2018. All Rights Reserved.
 
+import torch
 import torch.nn as nn
 
 import config
@@ -30,6 +31,8 @@ class TD_LSTM(nn.Module):
             config.text_vocab.vectors,
             freeze=False if config.if_embed_trainable else True)
         self.tar_mean = AspectMean(config.max_sen_len)
+        self.fc = nn.Linear(2*config.hidden_size,config.target_size)
+        self.dropout = nn.Dropout(config.dropout_rate)
         self.softmax = nn.Softmax(dim=-1)
 
     def forward(self, text, tar_w):
@@ -46,12 +49,19 @@ class TD_LSTM(nn.Module):
 
         '''averaging target word embedding'''
         tar_mean = self.tar_mean(tar_out)
+        combine = self.torch.cat((text_out, tar_mean), dim=-1)
 
         '''processed by L-LSTM and R-LSTM'''
-        l_out, _ = self.l_lstm(text_out)
-        r_out, _ = self.r_lstm(reversed(text_out))
+        l_out, _ = self.l_lstm(combine)
+        r_out, _ = self.r_lstm(reversed(combine))
 
+        l_h_out = torch.Tensor([input[i, x, :].tolist() for i, x in enumerate(r_idx)])
+        r_h_out = torch.Tensor([input[i, x, :].tolist() for i, x in enumerate(l_idx)])
 
+        com_out = torch.cat((l_h_out, r_h_out), dim=-1)
+        out = self.dropout(com_out)
+        out = self.fc(out)
+        return out
 
     def reset_param(self):
         for param in self.l_lstm._parameters.values():
@@ -59,6 +69,7 @@ class TD_LSTM(nn.Module):
         for param in self.r_lstm._parameters.values():
             param.data.uniform_(-self.uniform_rate, self.uniform_rate)
 
+    # TODO: TEXT和ASPECT的字典不同步，如何得到左右端点索引
     def get_tar_index(self, text, tar_w):
         tex_str = [''.join(str(x) for x in sen.tolist()) for sen in text]
         tar_str = [''.join(str(x) for x in sen.tolist()) for sen in tar_w]
